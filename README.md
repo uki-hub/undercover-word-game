@@ -5,7 +5,7 @@ Undercover word game
 <h4 align="center">The <a href="https://www.yanstarstudio.com/de/undercover-game" target="_blank">Undercover</a> word exposing game for the web!</h4>
 
 <p align="center">
-    <a href="https://undercover.localplayer.dev/">
+    <a href="https://uki-hub.github.io/undercover-word-game">
         <img src="https://img.shields.io/badge/Play-now-blue.svg?style=shields"
             alt="Gitter">
   </a>
@@ -19,7 +19,7 @@ Undercover word game
 <!-- ![screenshot](https://raw.githubusercontent.com/amitmerchant1990/electron-markdownify/master/app/img/markdownify.gif) -->
 
 
-This is a web-version of the popular [Undercover App](https://play.google.com/store/apps/details?id=com.yanstarstudio.joss.undercover). I made this, so that you can play Undercover remotely with your friends. [Play the game yourself](https://undercover.localplayer.dev/) together with your friends or with seperate browser tabs.
+This is a web-version of the popular [Undercover App](https://play.google.com/store/apps/details?id=com.yanstarstudio.joss.undercover). I made this, so that you can play Undercover remotely with your friends. [Play the game yourself](https://uki-hub.github.io/undercover-word-game) together with your friends or with seperate browser tabs.
 
 Undercover is a social deduction word game similar to **Werewolf** or **Among Us**.
 
