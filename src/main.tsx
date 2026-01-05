@@ -1,6 +1,6 @@
 // No debug logs in production
 if (process.env.NODE_ENV === "production") {
-  console.debug = () => { };
+  console.debug = () => {};
 }
 
 import React from "react";
