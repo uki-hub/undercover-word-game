@@ -7,12 +7,15 @@ import { useEffect, useState } from "react";
 import { useSound } from "@/context/SoundContext";
 import { Input } from "./ui/input";
 import { toast } from "sonner";
+import { Eye, EyeOff } from "lucide-react";
 
 export const WordReveal = () => {
-  const { gameState, setPhase, submitDescription, rerollWords } = useGame();
+  const { gameState, setPhase, submitDescription, rerollWords, secondRound, editKata } = useGame();
   const { peer, isHost, sendToHost } = usePeer();
   const { playSound } = useSound();
 
+  const [hideWord, setHideWord] = useState(false);
+  const [hideTips, setHideTips] = useState(false);
   const [description, setDescription] = useState("");
 
   useEffect(() => {
@@ -25,6 +28,14 @@ export const WordReveal = () => {
 
   const currentPlayer = gameState.players.find(p => p.id === peer?.id);
 
+  const handleSecondRound = () => {
+    secondRound();
+  };
+
+  const handleEditKata = () => {
+    editKata()
+  }
+
   const handleStartVoting = () => {
     setPhase("voting");
   };
@@ -33,7 +44,7 @@ export const WordReveal = () => {
     if (!description.trim()) return;
 
     if (description.trim().toLowerCase() === currentPlayer.word.toLowerCase()) {
-      toast.error("You can't use the word directly!");
+      toast.error("Ciri2 dari kata rahasia nya kids, bukan kata itu sendiri");
       return;
     }
 
@@ -69,58 +80,83 @@ export const WordReveal = () => {
       .filter((p): p is NonNullable<typeof p> => p !== undefined && !p.isEliminated)
     : [];
 
-
-  const currentSpeakerIndex = gameState.speakingOrder ? speakingOrderPlayers.findIndex(p => !p.submittedDescription) : 0;
-  const myIndex = gameState.speakingOrder ? speakingOrderPlayers.findIndex(p => p.id === currentPlayer.id) : 0;
-  const isMyTurn = gameState.speakingOrder && currentSpeakerIndex === myIndex;
+  const gameCurrentPlayerIndex = gameState.currentPlayerIndex;
+  const gameCurrentPlayerId = gameState.speakingOrder[gameCurrentPlayerIndex];
+  const isMyTurn = gameCurrentPlayerId == currentPlayer.id;
 
   return (
-    <div className="max-w-md mx-auto p-6 space-y-4 animate-fade-in">
-      <h2 className="text-2xl font-bold text-center mb-4 text-white">{currentPlayer.isEliminated ? "You're eliminated" : "Discussion"}</h2>
+    <div className="max-w-md md:max-w-2xl mx-auto p-3 space-y-4 animate-fade-in">
+      <h2 className="text-2xl font-bold text-center mb-4 text-white">{currentPlayer.isEliminated ? "Kamu di Gantung" : "Diskusi"}</h2>
       <Card className="p-6 text-center glass-morphism">
-        <div className="space-y-4">
+        <div className="">
           {currentPlayer.role === "mrwhite" ? (
-            <p className="text-lg text-white">You are <span className="font-bold text-primary">Mr.White</span></p>
+            <p className="text-lg text-white">Kamu Adalah <span className="font-bold text-primary">Mr.White</span></p>
           ) : (
-            <p className="text-lg text-white">
-              Your word {currentPlayer.isEliminated ? "was" : "is"}: <span className="font-bold text-primary">{currentPlayer.word}</span>
-            </p>
+            <div className="w-full">
+              <p className="text-lg text-white">
+                Kata kamu {currentPlayer.isEliminated ? "adalah" : "adalah"}: <span className="font-bold text-primary">{hideWord ? "*****" : currentPlayer.word}</span>
+                <div
+                  onClick={() => setHideWord(!hideWord)}
+                  className="inline ml-2.5">
+                  {hideWord ? <Eye className="inline stroke-gray-200 size-[20px] cursor-pointer" /> : <EyeOff className="inline stroke-gray-200 size-[20px] cursor-pointer" />}
+                </div>
+              </p>
+            </div>
+
           )}
-          <p className="text-sm text-white/70">
-            {currentPlayer.role === "mrwhite"
-              ? (
-                <>
-                  Listen carefully and try to blend in!
-                  <br />
-                  Figure out the secret word from others descriptions.
-                </>
-              )
-              : (
-                <>
-                  Describe the word without saying it directly.
-                  <br />
-                  Be clever - there might be infiltrators among us!
-                </>
-              )}
-          </p>
+
+          <h2 onClick={() => setHideTips(!hideTips)} className="mt-4 cursor-pointer underline hover:font-semibold">{hideTips ? "Show Tips" : "Hide Tips"}</h2>
+          {
+            hideTips ? <></> : <div className="animate-fade-in">
+              <div className="text-white/70">
+                <p className="text-sm">Di inget dan dipahami baik2 kids kata yang didapat</p>
+                <p className="text-sm">Jangan jadi villager tolol</p>
+              </div>
+              <br />
+              <p className="text-sm text-white/70">
+                {currentPlayer.role === "mrwhite"
+                  ? (
+                    <>
+                      Dengerin baik-baik dan coba nyamain diri sama yang lain dari ciri2 kata pemain lain
+                      <br />
+                      Cari tahu kata rahasianya dari deskripsi yang orang lain berikan.
+                    </>
+                  )
+                  : (
+                    <>
+                      Jelaskan ciri2 kata itu tanpa terlalu detail
+                      <br />
+                      Pinter-pinter, bisa jadi ada penyusup/lawan yang menyamar dari kata yang kita berikan
+                    </>
+                  )}
+              </p>
+            </div>
+          }
+
         </div>
       </Card>
 
       <div className="mt-8 space-y-4">
-        <h3 className="text-xl font-semibold text-white text-center">{isMyTurn ? "Your turn: Describe your word!" : "Speaking Order"}</h3>
+        <h3 className="text-xl font-semibold text-white text-center">{isMyTurn ? "Jalan Woi!!!, Jelasin Kata2 Lu" : "Urutan Jalan"}</h3>
 
         {isMyTurn && (
           <div className="relative flex h-10 w-full min-w-[200px]">
             <Input
               value={description}
-              onChange={(e) => setDescription(e.target.value.slice(0, 100))}
-              placeholder="Enter word or phrase..."
-              maxLength={25}
+              onChange={(e) => setDescription(e.target.value)}
+              onKeyDown={(e: React.KeyboardEvent) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleSubmitDescription();
+                }
+              }}
+              placeholder="Ciri2 Kata Lu..."
               className="peer h-full w-full rounded-[7px] border px-3 py-2.5 pr-20 text-sm font-normal outline-none transition-all"
             />
             {description.trim() && (
               <button
                 onClick={handleSubmitDescription}
+
                 type="button"
                 className="!absolute right-1 top-1 z-10 select-none rounded bg-primary hover:bg-primary/90 py-2 px-4 text-center align-middle text-xs font-bold uppercase text-white shadow-md shadow-primary/20 transition-all focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none"
                 data-ripple-light="true"
@@ -139,14 +175,46 @@ export const WordReveal = () => {
       </div>
 
       {isHost && (
-        <div className="space-y-2">
+        <div className="flex flex-col md:flex-row gap-2">
+          {/* Primary / Main action */}
+          <Button
+            onClick={handleSecondRound}
+            size="lg"
+            className="w-full bg-primary/30 text-secondary-foreground text-lg font-semibold
+               hover:bg-primary/50
+               transition-colors duration-200 border border-primary"
+          >
+            Jalan lagi
+          </Button>
+
+          {/* Edit kata */}
+          {
+            gameState.currentPlayerIndex > 0 ?
+              <Button
+                onClick={handleEditKata}
+                size="lg"
+                className="w-full bg-primary/30 text-secondary-foreground text-lg font-semibold
+                hover:bg-primary/50
+                transition-colors duration-200 border border-primary"
+              >
+                Edit kata
+              </Button>
+              : null
+          }
+
+          {/* Secondary action */}
           <Button
             onClick={handleStartVoting}
             size="lg"
-            className="w-full bg-primary hover:bg-primary/90 text-lg font-medium transition-colors duration-200"
+            className="w-full bg-primary text-white text-lg font-semibold
+               hover:bg-primary/90 active:scale-[0.98]
+               transition-all duration-200 shadow-md"
+
           >
-            Start Voting
+            Voting
           </Button>
+
+          {/* Tertiary / Utility action */}
           {gameState.currentRound === 1 && (
             <Button
               onClick={() => {
@@ -155,12 +223,15 @@ export const WordReveal = () => {
               }}
               variant="outline"
               size="lg"
-              className="w-full border-primary text-primary hover:bg-primary/10"
+              className="w-full border border-primary text-primary text-lg font-semibold
+                 hover:bg-primary/10 hover:border-solid
+                 transition-all duration-200"
             >
-              Reroll Words
+              Ganti kata
             </Button>
           )}
         </div>
+
       )}
     </div>
   );

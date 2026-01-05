@@ -20,7 +20,7 @@ const PeerContext = createContext<PeerContextType | undefined>(undefined);
 
 export const PeerProvider = ({ children }: { children: React.ReactNode }) => {
   const { playSound } = useSound();
-  
+
   const [peer, setPeer] = useState<Peer | null>(null);
   const [connections, setConnections] = useState<Record<string, DataConnection>>({});
   const [hostId, setHostId] = useState<string | null>(null);
@@ -29,7 +29,14 @@ export const PeerProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const newPeer = new Peer();
-    
+    // const newPeer = new Peer(
+    //   {
+    //     host: "localhost",
+    //     port: 9000,
+    //     path: "/peerjs"
+    //   }
+    // );
+
     newPeer.on("open", (id) => {
       console.log("My peer ID is:", id);
       setPeer(newPeer);
@@ -54,7 +61,7 @@ export const PeerProvider = ({ children }: { children: React.ReactNode }) => {
           conn.close();
         }
       };
-      
+
       conn.on("open", () => {
         setConnections(prev => ({ ...prev, [conn.peer]: conn }));
 
@@ -133,7 +140,7 @@ export const PeerProvider = ({ children }: { children: React.ReactNode }) => {
 
   const joinGame = (hostId: string, username: string) => {
     if (!peer) return;
-    
+
     const conn = peer.connect(hostId);
     console.log("Joining game with peer ID:", peer.id);
 
@@ -145,7 +152,7 @@ export const PeerProvider = ({ children }: { children: React.ReactNode }) => {
       window.removeEventListener('beforeunload', cleanupClient);
     };
     window.addEventListener('beforeunload', cleanupClient);
-    
+
     //Client connection events
     conn.on("open", () => {
       setConnections(prev => ({ ...prev, [hostId]: conn }));

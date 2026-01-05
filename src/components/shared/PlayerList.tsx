@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { Users, UserX } from "lucide-react";
+import { Skull, Users, UserX } from "lucide-react";
 import { Player } from "../../types/game";
 import { useEffect, useState } from "react";
 import { useSound } from "@/context/SoundContext";
@@ -98,7 +98,7 @@ export const PlayerList = ({
   const filteredEliminatedPlayers = !showEliminated ? players.filter(p => !p.isEliminated) : players;
   const displayPlayers = speakingOrder ? players : filteredEliminatedPlayers;
 
-  const currentSpeakerIndex = speakingOrder ? displayPlayers.findIndex(p => !p.submittedDescription) : 0;
+  const currentSpeakerIndex = speakingOrder ? displayPlayers.findIndex(p => !p.submittedDescriptions) : 0;
 
   return (
     <Card className="p-6 glass-morphism">
@@ -122,7 +122,7 @@ export const PlayerList = ({
               <div
                 key={player.id}
                 className={`
-                  flex items-center gap-3 p-3 rounded-lg transition-all duration-200
+                  flex items-start gap-3 p-3 rounded-lg transition-all duration-200
                   ${onPlayerClick ? 'cursor-pointer' : ''}
                   ${selectedPlayer === player.id
                     ? 'bg-primary/20 border border-primary/30'
@@ -139,7 +139,7 @@ export const PlayerList = ({
                 {/* Speaker Indicator: used in WordReveal.tsx (discussion) */}
                 {speakingOrder && (
                   <div className={`
-                    w-8 h-8 rounded-full flex items-center justify-center
+                    shrink-0 w-8 h-8 rounded-full flex items-center justify-center
                     ${isCurrentSpeaker ? 'bg-primary' : 'bg-white/10'}
                     ${isCurrentSpeaker ? 'text-white' : 'text-white/80'}
                   `}>
@@ -155,14 +155,19 @@ export const PlayerList = ({
                       )}
                     </span>
                     {/* Text or phrase the player has submitted this round */}
-                    {player.submittedDescription && (
-                      <p className="text-sm text-white/70 mt-1">
-                        {player.submittedDescription}
-                      </p>
+                    {player.submittedDescriptions && (
+                      // <p className="text-xs text-white/70 mt-1">
+                      //   Kata: <span className="font-semibold text-sm">{player.submittedDescriptions}</span>
+                      // </p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {player.submittedDescriptions.map((e, i) => <Card className="break-all text-sm px-2 py-1 bg-gray-300/10 border-none">
+                          <span className="text-xs">({i + 1})</span> <span>{e}</span>
+                        </Card>)}
+                      </div>
                     )}
 
                     {/* Votes Overview: used in VotingScreen.tsx and Results.tsx */}
-                    {showVotes && (
+                    {/* {showVotes && (
                       <div className="flex flex-wrap gap-2 mt-2">
                         {votes.map((voterName, vIndex) => (
                           <span
@@ -173,12 +178,12 @@ export const PlayerList = ({
                           </span>
                         ))}
                       </div>
-                    )}
+                    )} */}
                   </div>
                   {player.isEliminated && player.role && (
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-white/70">{player.role}</span>
-                      <UserX className="h-5 w-5 text-red-500" />
+                      <span className="text-sm text-white/70">WAFAT</span>
+                      <Skull className="h-5 w-5 text-gray-500" />
                     </div>
                   )}
                 </div>

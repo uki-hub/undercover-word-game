@@ -14,7 +14,7 @@ export const MultiplayerSetup = () => {
   const { hostGame, joinGame, hostId } = usePeer();
   const [showJoinForm, setShowJoinForm] = useState(searchParams.get("gameId") != undefined);
   const [showHostForm, setShowHostForm] = useState(false);
-  const [joinId, setJoinId] = useState(showJoinForm ? searchParams.get("gameId") : "");
+  const [joinId, setJoinId] = useState(showJoinForm ? searchParams.get("") : "");
   const [username, setUsername] = useState("");
 
   useEffect(() => {
@@ -22,7 +22,7 @@ export const MultiplayerSetup = () => {
     if (gameId) {
       setJoinId(gameId);
       setShowJoinForm(true);
-    }  
+    }
   }, [searchParams]);
 
   const handleJoin = () => {
@@ -48,7 +48,10 @@ export const MultiplayerSetup = () => {
   return (
     <Card className="max-w-md mx-auto p-6 space-y-6 animate-fade-in glass-morphism">
       <div className="space-y-4">
-        <h2 className="text-2xl font-bold text-center text-gradient">{t('welcome')}</h2>
+        <h2 className="text-2xl font-bold text-center text-gradient">Welcome to undercover
+          <br />keluarga UCOK
+        </h2>
+        <p className="text-sm text-center">Tempat nya untuk berbohong, berfitnah, dan berdosa</p>
 
         {!showHostForm && !showJoinForm && (
           <div className="space-y-4">
@@ -57,17 +60,17 @@ export const MultiplayerSetup = () => {
               className="w-full bg-primary hover:bg-primary/90 transition-colors duration-200"
             >
               <UserPlus className="mr-2 h-4 w-4" />
-              Host New Game
+              Bikin Game
             </Button>
 
             <div className="relative flex items-center">
               <span className="flex-grow border-t border-white/10"></span>
               <span className="px-4 text-xs uppercase text-muted-foreground">
-                Or join existing game
+                atau join game
               </span>
               <span className="flex-grow border-t border-white/10"></span>
             </div>
-            
+
             <Button
               onClick={() => setShowJoinForm(true)}
               className="w-full bg-secondary hover:bg-secondary/90 transition-colors duration-200"
@@ -110,7 +113,7 @@ export const MultiplayerSetup = () => {
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="Enter your username"
+              placeholder="Masukin Nama Kalian Kids"
               maxLength={25}
               className="w-full bg-secondary/20 border-secondary/30"
             />
@@ -118,7 +121,7 @@ export const MultiplayerSetup = () => {
               type="text"
               value={joinId}
               onChange={(e) => setJoinId(e.target.value)}
-              placeholder="Enter game ID"
+              placeholder="Game ID"
               className="w-full bg-secondary/20 border-secondary/30"
             />
             <Button

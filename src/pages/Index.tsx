@@ -57,22 +57,6 @@ const Index = () => {
           </GameProvider>
         </SoundProvider>
       </div>
-      <div className="hidden md:block">
-        <a
-          href="https://github.com/antebrl/undercover-word-game"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="fixed bottom-4 left-4 md:bottom-8 md:left-8"
-        >
-          <Button
-            variant="secondary"
-            className="glass-morphism hover:bg-white/10 transition-all duration-300"
-          >
-            <Github className="mr-2 h-4 w-4" />
-            View on GitHub
-          </Button>
-        </a>
-      </div>
     </div>
   );
 };

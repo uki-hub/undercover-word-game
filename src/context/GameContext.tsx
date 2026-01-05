@@ -20,6 +20,8 @@ interface GameContextType {
   checkGameEnd: (players: Player[]) => string | null;
   eliminatePlayer: (eliminatedId: string) => void;
   rerollWords: () => void;
+  secondRound: () => void;
+  editKata: () => void;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -35,6 +37,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     undercoverWord: "",
     mrWhiteGuess: undefined,
     roleDistribution: calculateDefaultDistribution(4),
+    currentPlayerIndex: 0,
   });
 
   const addPlayer = (name: string, id: string) => {
@@ -92,16 +95,22 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
 
   const generateSpeakingOrder = (players: Player[]) => {
     const activePlayers = players.filter(p => !p.isEliminated);
-    const nonWhitePlayers = activePlayers.filter(p => p.role !== "mrwhite");
 
-    // Ensure the first player is not a Mr. White
-    const firstPlayer = nonWhitePlayers[Math.floor(Math.random() * nonWhitePlayers.length)];
-
-    const remainingPlayers = activePlayers.filter(p => p.id !== firstPlayer.id);
-    const shuffledRemaining = shuffle(remainingPlayers);
-
-    return [firstPlayer, ...shuffledRemaining].map(player => player.id);
+    return shuffle(activePlayers).map(player => player.id);
   };
+
+  // const generateSpeakingOrder = (players: Player[]) => {
+  //   const activePlayers = players.filter(p => !p.isEliminated);
+  //   const nonWhitePlayers = activePlayers.filter(p => p.role !== "mrwhite");
+
+  //   // Ensure the first player is not a Mr. White
+  //   const firstPlayer = nonWhitePlayers[Math.floor(Math.random() * nonWhitePlayers.length)];
+
+  //   const remainingPlayers = activePlayers.filter(p => p.id !== firstPlayer.id);
+  //   const shuffledRemaining = shuffle(remainingPlayers);
+
+  //   return [firstPlayer, ...shuffledRemaining].map(player => player.id);
+  // };
 
   const checkGameEnd = (players: Player[]) => {
     const alivePlayers = players.filter(p => !p.isEliminated);
@@ -135,7 +144,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     const updatedPlayers = players.map(player => ({
       ...player,
       word: player.role === "mrwhite" ? "" : player.role === "undercover" ? undercoverWord : majorityWord,
-      submittedDescription: undefined,
+      submittedDescriptions: undefined,
     }));
 
     return {
@@ -217,13 +226,16 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
 
   const submitDescription = (playerId: string, submittedDescription: string) => {
     setGameState((prev) => {
+      const currentPlayerIndex = prev.speakingOrder?.findIndex(e => e == playerId);
+
       const updatedPlayers = prev.players.map(p =>
-        p.id === playerId ? { ...p, submittedDescription } : p
+        p.id === playerId ? { ...p, submittedDescriptions: [...p?.submittedDescriptions ?? [], submittedDescription] } : p
       );
 
       return {
         ...prev,
         players: updatedPlayers,
+        currentPlayerIndex: currentPlayerIndex + 1,
       };
     });
   };
@@ -257,6 +269,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
           votingResults: newVotingResults,
           phase: "results",
           lastEliminatedId: eliminatedId,
+          currentPlayerIndex: 0
         };
       }
 
@@ -270,7 +283,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   const eliminatePlayer = (eliminatedId: string) => {
     setGameState((prev) => {
       const updatedPlayers = prev.players.map(p =>
-        p.id === eliminatedId ? { ...p, isEliminated: true, submittedDescription: undefined } : { ...p, submittedDescription: undefined }
+        p.id === eliminatedId ? { ...p, isEliminated: true } : { ...p }
       );
 
       return {
@@ -314,6 +327,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
         undercoverWord: "",
         mrWhiteGuess: undefined,
         roleDistribution: prev.roleDistribution,
+        currentPlayerIndex: 0,
       };
     });
   };
@@ -324,6 +338,24 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       roleDistribution: distribution
     }));
   };
+
+  const secondRound = () => {
+    setGameState((prev) => ({ ...prev, phase: "discussion", currentPlayerIndex: 0 }));
+  }
+
+  const editKata = () => {
+    setGameState((prev) => {
+      debugger;
+      const lastPlayerIndex = prev.currentPlayerIndex - 1;
+      const lastPlayerId = prev.speakingOrder[lastPlayerIndex];
+
+      const updatedPlayers = [...prev.players]
+      const updatedPlayerIndex = updatedPlayers.findIndex(e => e.id == lastPlayerId);
+      updatedPlayers[updatedPlayerIndex]?.submittedDescriptions?.pop()
+
+      return { ...prev, currentPlayerIndex: lastPlayerIndex, players: updatedPlayers };
+    });
+  }
 
   return (
     <GameContext.Provider
@@ -342,6 +374,8 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
         checkGameEnd,
         eliminatePlayer,
         rerollWords,
+        secondRound,
+        editKata
       }}
     >
       {children}

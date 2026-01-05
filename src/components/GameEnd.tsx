@@ -6,6 +6,7 @@ import { Trophy, User } from "lucide-react";
 import { useSound } from "@/context/SoundContext";
 import { useEffect } from "react";
 import { MrWhiteGuess } from "./shared/MrWhiteGuess";
+import { pickRandom } from "@/lib/utils";
 
 export const GameEnd = () => {
   const { gameState, resetGame, setGameState } = useGame();
@@ -41,27 +42,25 @@ export const GameEnd = () => {
 
     switch (gameState.winner) {
       case "civilian":
-        playSound("/sounds/civilians-win.mp3");
+        playSound(pickRandom(["/sounds/penduduk-menang (1).mp3", "/sounds/penduduk-menang (2).mp3", "/sounds/penduduk-menang (3).mp3"]));
         break;
       case "infiltrators":
       case "undercover":
-        playSound("/sounds/undercover-win.mp3");
-        break;
       case "mrwhite":
-        playSound("/sounds/mrwhite-win.mp3");
+        playSound(pickRandom(["/sounds/musuh-menang (1).mp3", "/sounds/musuh-menang (2).mp3", "/sounds/musuh-menang (3).mp3"]));
         break;
     }
   }, []);
-  
+
   const getWinnerPlayers = () => {
-    if(gameState.winner === "infiltrators") {
+    if (gameState.winner === "infiltrators") {
       return gameState.players.filter(p => p.role === "undercover" || p.role === "mrwhite");
     }
     return gameState.players.filter(p => p.role === gameState.winner);
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 space-y-6 animate-fade-in">
+    <div className="max-w-md mx-auto p-6 space-y-6 animate--in">
       <div className="text-center space-y-4">
         {gameState.winner === currentPlayer?.role ? (
           <Trophy className="w-16 h-16 text-yellow-400 mx-auto" />
@@ -77,19 +76,19 @@ export const GameEnd = () => {
         <div className="space-y-4">
           <div className="text-center">
             <h2 className="text-2xl font-bold text-white">
-              {gameState.winner === "civilian" && "Civilians Win!"}
-              {gameState.winner === "undercover" && "Undercover Wins!"}
-              {gameState.winner === "mrwhite" && "Mr. White Wins!"}
-              {gameState.winner === "infiltrators" && "Infiltrators Win!"}
+              {gameState.winner === "civilian" && "Penduduk Desa Menang!!!"}
+              {gameState.winner === "undercover" && "Undercover Menang!!!"}
+              {gameState.winner === "mrwhite" && "Mr. White Menang!!!"}
+              {gameState.winner === "infiltrators" && "Infiltrators Menang!!!"}
             </h2>
           </div>
 
           <div className="space-y-3">
             {getWinnerPlayers().map((player) => (
-                <div 
+              <div
                 key={player.id}
                 className="flex items-center gap-3 p-3 rounded-lg bg-white/5"
-                >
+              >
                 {player.isEliminated ? (
                   <User className="w-5 h-5 text-gray-500" />
                 ) : (
@@ -98,10 +97,10 @@ export const GameEnd = () => {
                 <div>
                   <p className="text-lg block max-w-[250px] truncate text-white">{player.name}</p>
                   <p className="text-sm text-white/70">
-                  {player.role}{player.word && ` - Word: ${player.word}`}
+                    {player.role == "civilian" ? "Penduduk" : player.role}{player.word && ` - ${player.word}`}
                   </p>
                 </div>
-                </div>
+              </div>
             ))}
           </div>
         </div>

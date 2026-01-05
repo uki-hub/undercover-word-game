@@ -1,304 +1,1328 @@
 const wordPairs = [
-    ['Dog', 'Cat'],
-    ['Pizza', 'Burger'],
-    ['Beach', 'Mountain'],
-    ['Coffee', 'Tea'],
-    ['Car', 'Bus'],
-    ['Sun', 'Moon'],
-    ['Banana', 'Apple'],
-    ['Perfume', 'Deodorant'],
-    ['Adidas', 'Nike'],
-    ['backpack', 'suitcase'],
-    ['jacuzzi', 'sauna'],
-    ['sneakers', 'sandals'],
-    ['sunglasses', 'eyeglasses'],
-    ['piano', 'guitar'],
-    ['cruise', 'safari'],
-    ['sushi', 'pizza'],
-    ['hamburger', 'hotdog'],
-    ['chocolate', 'vanilla'],
-    ['beer', 'wine'],
-    ['whiskey', 'vodka'],
-    ['milk', 'juice'],
-    ['bread', 'butter'],
-    ['rice', 'pasta'],
-    ['chicken', 'beef'],
-    ['apple', 'orange'],
-    ['banana', 'strawberry'],
-    ['carrot', 'broccoli'],
-    ['potato', 'tomato'],
-    ['onion', 'garlic'],
-    ['salt', 'pepper'],
-    ['sugar', 'honey'],
-    ['water', 'soda'],
-    ['Apple', 'Microsoft'],
-    ['Google', 'Facebook'],
-    ['Amazon', 'Netflix'],
-    ['Pancake', 'Doughnut'],
-    ['Ice cream', 'Cake'],
-    ['McDonalds', 'KFC'],
-    ['Car', 'Bike'],
-    ['virus', 'bacteria'],
-    ['Lord of the rings', 'Hobbit'],
-    ['Harry Potter', 'Lord Voldemort'],
-    ['Superman', 'Batman'],
-    ['Spiderman', 'Ironman'],
-    ['Captain America', 'Thor'],
-    ['Pizza', 'Pasta'],
-    ['Football', 'Basketball'],
-    ['Music', 'Dancing'],
-    ['Dog', 'Wolf'],
-    ['Apple', 'Pear'],
-    ['Car', 'Truck'],
-    ['Pencil', 'Pen'],
-    ['Pizza', 'Lasagna'],
-    ['Facebook', 'Instagram'],
-    ['Sunglasses', 'Goggles'],
-    ['Laptop', 'Tablet'],
-    ['Doctor', 'Surgeon'],
-    ['Bitcoin', 'Ethereum'],
-    ['Watch', 'Ring'],
-    ['Bomb', 'Gun'],
-    ['Einstein', 'Newton'],
-    ['Shirt', 'Sweater'],
-    ['Soccer', 'Rugby'],
-    ['Plane', 'Helicopter'],
-    ['River', 'Lake'],
-    ['Ocean', 'River'],
-    ['Teacher', 'Professor'],
-    ['Bicycle', 'Motorcycle'],
-    ['Salt', 'Sugar'],
-    ['Knife', 'Scissors'],
-    ['Chair', 'Bench'],
-    ['Castle', 'House'],
-    ['Train', 'Bus'],
-    ['Mirror', 'window pane'],
-    ['Mouse', 'Rat'],
-    ['Cucumber', 'Zucchini'],
-    ['Strawberry', 'Raspberry'],
-    ['Banana', 'Plantain'],
-    ['Coconut', 'Pineapple'],
-    ['Dragon', 'Dinosaur'],
-    ['Ghost', 'Zombie'],
-    ['Chef', 'Kitchen counter'],
-    ['Shovel', 'Axe'],
-    ['Pyramid', 'Temple'],
-    ['Volcano', 'Mountain'],
-    ['Desert', 'Sand'],
-    ['Cloud', 'Fog'],
-    ['Snow', 'Hail'],
-    ['Detective', 'Criminal'],
-    ['Jungle', 'Forest'],
-    ['Clock', 'Watch'],
-    ['Bread', 'Toast'],
-    ['Painting', 'Sketch'],
-    ['Umbrella', 'Parasol'],
-    ['Suit', 'necktie'],
-    ['Socks', 'Stockings'],
-    ['Belt', 'Jeans'],
-    ['Crown', 'Hat'],
-    ['Ballet', 'Hip Hop'],
-    ['Parrot', 'Crow'],
-    ['Bat', 'Owl'],
-    ['Candle', 'Lantern'],
-    ['Library', 'University'],
-    ['Museum', 'Gallery'],
-    ['Radio', 'Podcast'],
-    ['online news', 'Newspaper'],
-    ['Pen', 'Paper'],
-    ['Moon', 'Sun'],
-    ['Tennis', 'Badminton'],
-    ['Skiing', 'Snow'],
-    ['Swimming', 'Diving'],
-    ['Running', 'Jogging'],
-    ['Elevator', 'Escalator'],
-    ['Ferry', 'Cruise'],
-    ['Map', 'GPS'],
-    ['Sailboat', 'Yacht'],
-    ['Meteor', 'Satellite'],
-    ['Planet', 'Star'],
-    ['Earthquake', 'Tsunami'],
-    ['Jellyfish', 'Octopus'],
-    ['Wolf', 'Fox'],
-    ['Hawk', 'Vulture'],
-    ['Lizard', 'Gecko'],
-    ['Elvis', 'The Beatles'],
-    ['Leonardo da Vinci', 'Michelangelo'],
-    ['Napoleon', 'Caesar'],
-    ['Mario', 'Luigi'],
-    ['Sonic', 'Tails'],
-    ['Pac-Man', 'Tetris'],
-    ['Fortnite', 'Minecraft'],
-    ['Call of Duty', 'Battlefield'],
-    ['Game of Thrones', 'Lord of the Rings'],
-    ['Star Wars', 'Star Trek'],
-    ['Harry Potter', 'Percy Jackson'],
-    ['Sherlock Holmes', 'Hercule Poirot'],
-    ['Dracula', 'Frankenstein'],
-    ['James Bond', 'Secret Service'],
-    ['Homer Simpson', 'Peter Griffin'],
-    ['SpongeBob', 'Patrick'],
-    ['Godzilla', 'King Kong'],
-    ['Lego', 'Playmobil'],
-    ['UNO', 'Monopoly'],
-    ['Catan', 'Risk'],
-    ['Blackjack', 'Poker'],
-    ['Bingo', 'Roulette'],
-    ['New York', 'Los Angeles'],
-    ['Paris', 'London'],
-    ['Rome', 'Athens'],
-    ['Sydney', 'Melbourne'],
-    ['Rio de Janeiro', 'Buenos Aires'],
-    ['Mount Everest', 'Nepal'],
-    ['Amazon', 'Nile'],
-    ['Grand Canyon', 'Niagara Falls'],
-    ['Taj Mahal', 'Great Wall of China'],
-    ['Eiffel Tower', 'Statue of Liberty'],
-    ['Big Ben', 'Leaning Tower of Pisa'],
-    ['Olympics', 'World Cup'],
-    ['NBA', 'NFL'],
-    ['Golf', 'Cricket'],
-    ['UFC', 'WWE'],
-    ['Twitch', 'Netflix'],
-    ['Twitter', 'Facebook'],
-    ['SpaceX', 'Tesla'],
-    ['Burger King', 'McDonald’s'],
-    ['Sony', 'Samsung'],
-    ['Mercedes', 'BMW'],
-    ['Harvard', 'MIT'],
-    ['Oxford', 'Highschool'],
-    ['CIA', 'FBI'],
-    ['Hitler', 'Stalin'],
-    ['Tesla', 'Porsche'],
-    ['iPhone', 'Samsung'],
-    ['PlayStation', 'Xbox'],
-    ['Windows', 'MacOS'],
-    ['YouTube', 'TikTok'],
-    ['Twitch', 'Kick'],
-    ['Spotify', 'Apple Music'],
-    ['Reddit', 'Discord'],
-    ['Instagram', 'Snapchat'],
-    ['ChatGPT', 'Gemini'],
-    ['Clock', 'Sundial'],
-    ['Laptop', 'Desktop'],
-    ['Shark', 'Dolphin'],
-    ['Penguin', 'Seagull'],
-    ['Moon', 'Planet'],
-    ['Comet', 'Asteroid'],
-    ['Bridge', 'Tunnel'],
-    ['Bus', 'Tram'],
-    ['Train', 'Monorail'],
-    ['Boat', 'Submarine'],
-    ['Notebook', 'Diary'],
-    ['Spoon', 'Fork'],
-    ['Plate', 'Bowl'],
-    ['Fountain', 'Waterfall'],
-    ['Lake', 'Pond'],
-    ['Giraffe', 'Zebra'],
-    ['Elephant', 'Rhino'],
-    ['Alligator', 'Crocodile'],
-    ['Oyster', 'Clam'],
-    ['Gold', 'Silver'],
-    ['Platinum', 'Gold'],
-    ['Denim', 'Corduroy'],
-    ['Jacket', 'Coat'],
-    ['Scarf', 'Tie'],
-    ['Boots', 'Sneakers'],
-    ['Helmet', 'Hat'],
-    ['Necklace', 'Bracelet'],
-    ['Ring', 'Earring'],
-    ['Microphone', 'Speaker'],
-    ['Headphones', 'Earbuds'],
-    ['Television', 'Radio'],
-    ['Projector', 'Screen'],
-    ['Calculator', 'Typewriter'],
-    ['Flashlight', 'Lantern'],
-    ['Tent', 'Cabin'],
-    ['Compass', 'Map'],
-    ['Boarding pass', 'ID card'],
-    ['Ticket', 'Invoice'],
-    ['Passport', 'Ticket'],
-    ['Subway', 'Taxi'],
-    ['Sky', 'Jet'],
-    ['Motorcycle', 'Scooter'],
-    ['Surfboard', 'Skateboard'],
-    ['Baseball', 'Football'],
-    ['Volleyball', 'Basketball'],
-    ['Table tennis', 'Badminton'],
-    ['Bakery', 'Butcher'],
-    ['Puzzle', 'Crossword'],
-    ['Cards', 'Dice'],
-    ['Bowling', 'Golf'],
-    ['Marathon', 'Sprint'],
-    ['Fencing', 'Archery'],
-    ['Boxing', 'Karate'],
-    ['Hockey', 'Soccer'],
-    ['Concert', 'Festival'],
-    ['Novel', 'Poem'],
-    ['Dictionary', 'Encyclopedia'],
-    ['Pharmacist', 'Doctor'],
-    ['Engineer', 'Architect'],
-    ['Firefighter', 'Policeman'],
-    ['Germany', 'France'],
-    ['Pilot', 'Astronaut'],
-    ['Judge', 'Punishment'],
-    ['Baker', 'Chef'],
-    ['Farmer', 'Fisherman'],
-    ['Blacksmith', 'Carpenter'],
-    ['Heaven', 'Hell'],
-    ['Sky', 'Clouds'],
-    ['Japan', 'China'],
-    ['Germany', 'Beer'],
-    ['Movie', 'Actor'],
-    ['Screen', 'TV'],
-    ['France', 'Eiffel Tower'],
-    ['Thor', 'Lightning'],
-    ['Obi Wan', 'Force'],
-    ['UFO', 'Drones'],
-    ['God', 'Heaven'],
-    ['Tortilla', 'Taco'],
-    ['Baguette', 'Ciabatta'],
-    ['Hot Dog', 'Bratwurst'],
-    ['Energy Drink', 'Soda'],
-    ['Coconut milk', 'soy milk'],
-    ['Picasso', 'Van Gogh'],
-    ['Mozart', 'Beethoven'],
-    ['Messi', 'Ronaldo'],
-    ['Bayern Munich', 'Real Madrid'],
-    ['Ferrari', 'Lamborghini'],
-    ['Coca-Cola', 'Pepsi'],
-    ['London', 'Paris'],
-    ['Los Angeles', 'New York'],
-    ['Big Ben', 'Leaning Tower of Pisa'],
-    ['Statue of Liberty', 'Eiffel Tower'],
-    ['Mouse', 'Keyboard'],
-    ['TV', 'Laptop'],
-    ['Wardrobe', 'Showcase'],
-    ['Birch', 'Shrub'],
-    ['Radiator', 'Hairdryer'],
-    ['Lamp', 'Candle'],
-    ['Pillow', 'Blanket'],
-    ['Microphone', 'Camera'],
-    ['Oven', 'Microwave'],
-    ['Pan', 'Pot'],
-    ['Tablet', 'Smartphone'],
-    ['Stairs', 'Elevator'],
-    ['Techno', 'Rap'],
-    ['Rock', 'Pop'],
-    ['Table Tennis', 'Badminton'],
-    ['Window', 'Door'],
-    ['Oven', 'Heating'],
-    ['Wristwatch', 'Alarm Clock'],
-    ['Bed', 'Sofa'],
-    ['Book', 'Newspaper'],
-    ['Forest', 'Park'],
-    ['Cinema', 'Bowling'],
-    ['Netflix', 'Cinema'],
-    ['Swimming Pool', 'Beach'],
-    ['Glass', 'Cup'],
-    ['Job', 'Hobby'],
-    ['Jesus', 'Santa Claus'],
-    ['bra', 'bikini'],
+    [
+        "Awan",
+        "Kabut"
+    ],
+    [
+        "Pantai Kuta",
+        "Pantai Pandawa"
+    ],
+    [
+        "Pizza",
+        "Pasta"
+    ],
+    [
+        "Kursi Lipat",
+        "Kursi Rotan"
+    ],
+    [
+        "Helm",
+        "Topi"
+    ],
+    [
+        "Detective",
+        "Police"
+    ],
+    [
+        "Roti Gandum",
+        "Roti Tawar"
+    ],
+    [
+        "Jam Meja",
+        "Jam Dinding"
+    ],
+    [
+        "Hiu",
+        "Lumba Lumba"
+    ],
+    [
+        "Kaos",
+        "Kemeja"
+    ],
+    [
+        "Twitch",
+        "Netflix"
+    ],
+    [
+        "Bola Tenis",
+        "Bola Pingpong"
+    ],
+    [
+        "Semangka",
+        "Melon"
+    ],
+    [
+        "Jam Tangan Digital",
+        "Jam Tangan Analog"
+    ],
+    [
+        "Adidas",
+        "Nike"
+    ],
+    [
+        "Tablet",
+        "Smartphone"
+    ],
+    [
+        "Rumah Kayu",
+        "Rumah Batu"
+    ],
+    [
+        "Google",
+        "Facebook"
+    ],
+    [
+        "Petir",
+        "Halilintar"
+    ],
+    [
+        "Strawberry",
+        "Raspberry"
+    ],
+    [
+        "Jerapah",
+        "Zebra"
+    ],
+    [
+        "Running",
+        "Jogging"
+    ],
+    [
+        "Pohon",
+        "Rumput"
+    ],
+    [
+        "Mouse",
+        "Keyboard"
+    ],
+    [
+        "Baju Renang",
+        "Celana Renang"
+    ],
+    [
+        "Wajan",
+        "Panci"
+    ],
+    [
+        "Es Krim",
+        "Puding"
+    ],
+    [
+        "Tenda",
+        "Kabin"
+    ],
+    [
+        "Coffee",
+        "Tea"
+    ],
+    [
+        "Jaket Kulit",
+        "Jaket Jeans"
+    ],
+    [
+        "Sepeda",
+        "Motor"
+    ],
+    [
+        "Istana",
+        "Rumah Mewah"
+    ],
+    [
+        "Rubah",
+        "Serigala"
+    ],
+    [
+        "Buku",
+        "Koran"
+    ],
+    [
+        "Windows",
+        "MacOS"
+    ],
+    [
+        "Energy Drink",
+        "Soda"
+    ],
+    [
+        "Jembatan Gantung",
+        "Jembatan Beton"
+    ],
+    [
+        "Bantal Empuk",
+        "Bantal Pipih"
+    ],
+    [
+        "Angin Kencang",
+        "Angin Sepoi-sepoi"
+    ],
+    [
+        "Singa",
+        "Macan"
+    ],
+    [
+        "sneakers",
+        "sandals"
+    ],
+    [
+        "Roti Tawar",
+        "Roti Gandum"
+    ],
+    [
+        "Sofa",
+        "Kursi Recliner"
+    ],
+    [
+        "Gold",
+        "Silver"
+    ],
+    [
+        "Nasi Goreng",
+        "Mie Goreng"
+    ],
+    [
+        "Durian",
+        "Nangka"
+    ],
+    [
+        "Kelelawar",
+        "Burung hantu"
+    ],
+    [
+        "Apartemen",
+        "Kost"
+    ],
+    [
+        "Kasur",
+        "Matras"
+    ],
+    [
+        "Air Mancur",
+        "Air Terjun"
+    ],
+    [
+        "chicken",
+        "beef"
+    ],
+    [
+        "Desert",
+        "Sand"
+    ],
+    [
+        "Cincin",
+        "Anting"
+    ],
+    [
+        "Burger",
+        "Hotdog"
+    ],
+    [
+        "Laut",
+        "Sungai"
+    ],
+    [
+        "Kamera DSLR",
+        "Kamera Mirrorless"
+    ],
+    [
+        "Drone",
+        "Helikopter Mainan"
+    ],
+    [
+        "Timun",
+        "Terong"
+    ],
+    [
+        "Minuman Soda",
+        "Minuman Jus"
+    ],
+    [
+        "Gelang Emas",
+        "Gelang Perak"
+    ],
+    [
+        "Komputer Desktop",
+        "Laptop"
+    ],
+    [
+        "Lautan",
+        "Pantai"
+    ],
+    [
+        "Japan",
+        "China"
+    ],
+    [
+        "Cabai Merah",
+        "Cabai Hijau"
+    ],
+    [
+        "Burger King",
+        "McDonald’s"
+    ],
+    [
+        "Notebook",
+        "Diary"
+    ],
+    [
+        "Jendela",
+        "Pintu"
+    ],
+    [
+        "Sendok",
+        "Garpu"
+    ],
+    [
+        "Pemadam Kebakaran",
+        "Polisi"
+    ],
+    [
+        "Cincin Berlian",
+        "Cincin Perak"
+    ],
+    [
+        "Celana Jeans",
+        "Celana Chino"
+    ],
+    [
+        "Mie",
+        "Bihun"
+    ],
+    [
+        "Apple",
+        "Microsoft"
+    ],
+    [
+        "Map",
+        "GPS"
+    ],
+    [
+        "Kerata",
+        "Monorail"
+    ],
+    [
+        "Mangga",
+        "Nanas"
+    ],
+    [
+        "Sabun",
+        "Shampoo"
+    ],
+    [
+        "Cermin",
+        "Kaca"
+    ],
+    [
+        "Peta Dunia",
+        "Globe"
+    ],
+    [
+        "Bus Kota",
+        "Bus Pariwisata"
+    ],
+    [
+        "Roti Tawar",
+        "Roti Bakar"
+    ],
+    [
+        "Teh Hijau",
+        "Teh Hitam"
+    ],
+    [
+        "Panci",
+        "Wajan"
+    ],
+    [
+        "Surga",
+        "Neraka"
+    ],
+    [
+        "Air Mineral",
+        "Air Soda"
+    ],
+    [
+        "Motor Bebek",
+        "Motor Sport"
+    ],
+    [
+        "Earthquake",
+        "Tsunami"
+    ],
+    [
+        "Shirt",
+        "Sweater"
+    ],
+    [
+        "Pelangi",
+        "Aurora"
+    ],
+    [
+        "Terowongan Jalan",
+        "Terowongan Kereta"
+    ],
+    [
+        "Jeruk",
+        "Lemon"
+    ],
+    [
+        "PlayStation",
+        "Xbox"
+    ],
+    [
+        "Yahudi",
+        "Satanic"
+    ],
+    [
+        "Yahudi",
+        "Kristen"
+    ],
+    [
+        "Budha",
+        "Hindu"
+    ],
+    [
+        "Volcano",
+        "Mountain"
+    ],
+    [
+        "Bangku",
+        "Kursi"
+    ],
+    [
+        "Piring",
+        "Mangkok"
+    ],
+    [
+        "Bintang Jatuh",
+        "Meteor"
+    ],
+    [
+        "Grand Canyon",
+        "Niagara Falls"
+    ],
+    [
+        "Jeruk",
+        "Lemon"
+    ],
+    [
+        "Sarung Tinju",
+        "Pelindung Kepala"
+    ],
+    [
+        "Pulau Bali",
+        "Pulau Lombok"
+    ],
+    [
+        "Sup Ayam",
+        "Sup Sayur"
+    ],
+    [
+        "Petani",
+        "Pelayan"
+    ],
+    [
+        "Ular",
+        "Kadal"
+    ],
+    [
+        "iPhone",
+        "Samsung"
+    ],
+    [
+        "Headphones",
+        "Earbuds"
+    ],
+    [
+        "Roti",
+        "Donat"
+    ],
+    [
+        "Volleyball",
+        "Basketball"
+    ],
+    [
+        "Statue of Liberty",
+        "Eiffel Tower"
+    ],
+    [
+        "Meja Kantor",
+        "Meja Belajar"
+    ],
+    [
+        "Job",
+        "Hobby"
+    ],
+    [
+        "Lampu",
+        "Lilin"
+    ],
+    [
+        "sunglasses",
+        "eyeglasses"
+    ],
+    [
+        "kakatua",
+        "Gagak"
+    ],
+    [
+        "Wolf",
+        "Fox"
+    ],
+    [
+        "Hantu",
+        "Zombie"
+    ],
+    [
+        "Pizza",
+        "Pasta"
+    ],
+    [
+        "Jam Tangan",
+        "Jam Dinding"
+    ],
+    [
+        "apple",
+        "orange"
+    ],
+    [
+        "Air Putih",
+        "Air Mineral"
+    ],
+    [
+        "Oven",
+        "Microwave"
+    ],
+    [
+        "Radio",
+        "Podcast"
+    ],
+    [
+        "Parasut",
+        "Balon Udara"
+    ],
+    [
+        "Spotify",
+        "Apple Music"
+    ],
+    [
+        "Swimming",
+        "Diving"
+    ],
+    [
+        "virus",
+        "bacteria"
+    ],
+    [
+        "chocolate",
+        "vanilla"
+    ],
+    [
+        "Langit",
+        "Awan"
+    ],
+    [
+        "Apel",
+        "Pisang"
+    ],
+    [
+        "Swimming Pool",
+        "Beach"
+    ],
+    [
+        "Kapal Laut",
+        "Kapal Pesiar"
+    ],
+    [
+        "Mobil Balap",
+        "Mobil Klasik"
+    ],
+    [
+        "Kereta",
+        "Bus"
+    ],
+    [
+        "Godzilla",
+        "King Kong"
+    ],
+    [
+        "jacuzzi",
+        "sauna"
+    ],
+    [
+        "Lukisan",
+        "Sketsa"
+    ],
+    [
+        "Handuk",
+        "Keset"
+    ],
+    [
+        "Piring",
+        "Mangkok"
+    ],
+    [
+        "Lampu Sorot",
+        "Lampu Tidur"
+    ],
+    [
+        "Laut Karibia",
+        "Laut Mediterania"
+    ],
+    [
+        "Sepeda Gunung",
+        "Sepeda Lipat"
+    ],
+    [
+        "Gajah",
+        "Badak"
+    ],
+    [
+        "water",
+        "soda"
+    ],
+    [
+        "Tesla",
+        "Porsche"
+    ],
+    [
+        "Gitar Akustik",
+        "Gitar Elektrik"
+    ],
+    [
+        "Angsa",
+        "Itik"
+    ],
+    [
+        "Ayam Goreng",
+        "Ikan Goreng"
+    ],
+    [
+        "Guru",
+        "Professor"
+    ],
+    [
+        "Sungai Amazon",
+        "Sungai Nile"
+    ],
+    [
+        "Pesawat",
+        "Helicopter"
+    ],
+    [
+        "Kursi Kantor",
+        "Kursi Lipat"
+    ],
+    [
+        "Sendok",
+        "Garpu"
+    ],
+    [
+        "Microphone",
+        "Speaker"
+    ],
+    [
+        "Ice cream",
+        "Cake"
+    ],
+    [
+        "UFC",
+        "WWE"
+    ],
+    [
+        "Telur Rebus",
+        "Telur Dadar"
+    ],
+    [
+        "Pisau",
+        "Gunting"
+    ],
+    [
+        "Papan Tulis",
+        "Whiteboard"
+    ],
+    [
+        "Lampu Meja",
+        "Lampu Gantung"
+    ],
+    [
+        "CIA",
+        "FBI"
+    ],
+    [
+        "Perahu",
+        "Kapal"
+    ],
+    [
+        "salt",
+        "pepper"
+    ],
+    [
+        "Topi Jerami",
+        "Topi Baseball"
+    ],
+    [
+        "TV",
+        "Radio"
+    ],
+    [
+        "Daging Sapi",
+        "Daging Kambing"
+    ],
+    [
+        "Danau",
+        "Kolam"
+    ],
+    [
+        "Kue Bolu",
+        "Kue Lapis"
+    ],
+    [
+        "Matahari",
+        "Bulan"
+    ],
+    [
+        "Twitter",
+        "Facebook"
+    ],
+    [
+        "Superman",
+        "Batman"
+    ],
+    [
+        "Sungar",
+        "Danau"
+    ],
+    [
+        "Katak",
+        "Salamander"
+    ],
+    [
+        "Gelask",
+        "Cangkir"
+    ],
+    [
+        "Gitar",
+        "Ukulele"
+    ],
+    [
+        "Kucing",
+        "Harimau"
+    ],
+    [
+        "Gedung Perkantoran",
+        "Pabrik"
+    ],
+    [
+        "Kursi Makan",
+        "Kursi Taman"
+    ],
+    [
+        "Bantal",
+        "Guling"
+    ],
+    [
+        "Selimut",
+        "Bedcover"
+    ],
+    [
+        "Jembatan",
+        "Terowongan"
+    ],
+    [
+        "Marathon",
+        "Sprint"
+    ],
+    [
+        "Mercedes",
+        "BMW"
+    ],
+    [
+        "Sungai Nil",
+        "Sungai Amazon"
+    ],
+    [
+        "McDonalds",
+        "KFC"
+    ],
+    [
+        "Dog",
+        "Wolf"
+    ],
+    [
+        "Selimut Wol",
+        "Selimut Bulu"
+    ],
+    [
+        "Kalung",
+        "Gelang"
+    ],
+    [
+        "Spiderman",
+        "Ironman"
+    ],
+    [
+        "Kalung Mutiara",
+        "Kalung Emas"
+    ],
+    [
+        "Syal",
+        "Dasi"
+    ],
+    [
+        "Paprika",
+        "Cabai"
+    ],
+    [
+        "Hutan Hujan",
+        "Hutan Pinus"
+    ],
+    [
+        "bra",
+        "bikini"
+    ],
+    [
+        "Tas Ransel",
+        "Tas Selempang"
+    ],
+    [
+        "Perpustakaan",
+        "Universitas"
+    ],
+    [
+        "Football",
+        "Basketball"
+    ],
+    [
+        "Laptop",
+        "Komputer"
+    ],
+    [
+        "Air Terjun Niagara",
+        "Air Terjun Angel"
+    ],
+    [
+        "Danau Toba",
+        "Danau Singkarak"
+    ],
+    [
+        "Tenis Meja",
+        "Badminton"
+    ],
+    [
+        "Busway",
+        "Angkotan umum"
+    ],
+    [
+        "Bunga",
+        "Daun"
+    ],
+    [
+        "Kacang",
+        "Biji-bijian"
+    ],
+    [
+        "potato",
+        "tomato"
+    ],
+    [
+        "Baseball",
+        "Football"
+    ],
+    [
+        "Pisang",
+        "Apel"
+    ],
+    [
+        "Mahkota",
+        "Topi"
+    ],
+    [
+        "Teh Panas",
+        "Kopi Panas"
+    ],
+    [
+        "Tabung Gas",
+        "Kompor Listrik"
+    ],
+    [
+        "Hujan Deras",
+        "Hujan Gerimis"
+    ],
+    [
+        "Sepatu Boots",
+        "Sepatu Sneakers"
+    ],
+    [
+        "Taj Mahal",
+        "Great Wall of China"
+    ],
+    [
+        "Mobil",
+        "Motor"
+    ],
+    [
+        "Bus",
+        "Truk"
+    ],
+    [
+        "Messi",
+        "Ronaldo"
+    ],
+    [
+        "SIM",
+        "KTP"
+    ],
+    [
+        "Blacksmith",
+        "Carpenter"
+    ],
+    [
+        "Kartu",
+        "Dadu"
+    ],
+    [
+        "hamburger",
+        "hotdog"
+    ],
+    [
+        "Bawang Bombay",
+        "Bawang"
+    ],
+    [
+        "Jam Dinding",
+        "Jam Meja"
+    ],
+    [
+        "Mobil",
+        "Truck"
+    ],
+    [
+        "UNO",
+        "Monopoly"
+    ],
+    [
+        "Microphone",
+        "Camera"
+    ],
+    [
+        "Kacamata Hitam",
+        "Kacamata Baca"
+    ],
+    [
+        "Alligator",
+        "Crocodile"
+    ],
+    [
+        "Seluncur Es",
+        "Ski"
+    ],
+    [
+        "Tempat Tidur",
+        "Sofa"
+    ],
+    [
+        "Daster",
+        "Piyama"
+    ],
+    [
+        "Kelinci",
+        "Tupai"
+    ],
+    [
+        "Sony",
+        "Samsung"
+    ],
+    [
+        "Pesawat Komersial",
+        "Pesawat Tempur"
+    ],
+    [
+        "Burung Hantu",
+        "Elang"
+    ],
+    [
+        "Facebook",
+        "Instagram"
+    ],
+    [
+        "Boxing",
+        "Karate"
+    ],
+    [
+        "Engineer",
+        "Arsitek"
+    ],
+    [
+        "Pizza",
+        "Burger"
+    ],
+    [
+        "Instagram",
+        "Snapchat"
+    ],
+    [
+        "sugar",
+        "honey"
+    ],
+    [
+        "Coconut milk",
+        "Soy milk"
+    ],
+    [
+        "Doctor",
+        "Surgeon"
+    ],
+    [
+        "Naga",
+        "Dinosaurus"
+    ],
+    [
+        "Sayur Bayam",
+        "Sayur Kangkung"
+    ],
+    [
+        "Mouse",
+        "Rat"
+    ],
+    [
+        "Laptop",
+        "Tablet"
+    ],
+    [
+        "Susu Kedelai",
+        "Susu Almond"
+    ],
+    [
+        "Pensil",
+        "Pulpen"
+    ],
+    [
+        "milk",
+        "juice"
+    ],
+    [
+        "Parfum",
+        "Deodorant"
+    ],
+    [
+        "Hutan",
+        "Taman"
+    ],
+    [
+        "Sekop",
+        "Serokan"
+    ],
+    [
+        "Kue Kering",
+        "Kue Basah"
+    ],
+    [
+        "Lampu Jalan",
+        "Lampu Sorot"
+    ],
+    [
+        "Apple",
+        "Pear"
+    ],
+    [
+        "YouTube",
+        "TikTok"
+    ],
+    [
+        "Kompas",
+        "Peta"
+    ],
+    [
+        "Agar",
+        "Puding"
+    ],
+    [
+        "Motor Trail",
+        "Motor Bebek"
+    ],
+    [
+        "Skiing",
+        "Salju"
+    ],
+    [
+        "Pisang",
+        "Pepaya"
+    ],
+    [
+        "Table tennis",
+        "Badminton"
+    ],
+    [
+        "Tangga",
+        "Elevator"
+    ],
+    [
+        "Nasi",
+        "Kentang"
+    ],
+    [
+        "Eiffel Tower",
+        "Statue of Liberty"
+    ],
+    [
+        "Sepatu Sneakers",
+        "Sepatu Boots"
+    ],
+    [
+        "Dompet",
+        "Clutch"
+    ],
+    [
+        "Topi Fedora",
+        "Topi Baseball"
+    ],
+    [
+        "Merpati",
+        "Gagak"
+    ],
+    [
+        "Olympics",
+        "World Cup"
+    ],
+    [
+        "Strawberry",
+        "Raspberry"
+    ],
+    [
+        "Pepaya",
+        "Nangka"
+    ],
+    [
+        "piano",
+        "guitar"
+    ],
+    [
+        "Mangga",
+        "Pepaya"
+    ],
+    [
+        "Tomat",
+        "Mentimun"
+    ],
+    [
+        "Mobil",
+        "Bus"
+    ],
+    [
+        "Jaket",
+        "Mantel"
+    ],
+    [
+        "Taman Kota",
+        "Taman Nasional"
+    ],
+    [
+        "Sarung Tangan",
+        "Kaos Kaki"
+    ],
+    [
+        "beer",
+        "wine"
+    ],
+    [
+        "Sepatu Selam",
+        "Fin"
+    ],
+    [
+        "Kasur Busa",
+        "Kasur Springbed"
+    ],
+    [
+        "Pizza",
+        "Lasagna"
+    ],
+    [
+        "Lilin",
+        "Lentera"
+    ],
+    [
+        "Captain America",
+        "Thor"
+    ],
+    [
+        "Sikat Gigi",
+        "Pasta Gigi"
+    ],
+    [
+        "Tas",
+        "Dompet"
+    ],
+    [
+        "Kacamata Renang",
+        "Pelampung"
+    ],
+    [
+        "Es Batu",
+        "Es Krim"
+    ],
+    [
+        "Bawang Merah",
+        "Bawang Putih"
+    ],
+    [
+        "Kapal Selam",
+        "Perahu Layar"
+    ],
+    [
+        "Perfume",
+        "Deodorant"
+    ],
+    [
+        "SpongeBob",
+        "Patrick"
+    ],
+    [
+        "carrot",
+        "broccoli"
+    ],
+    [
+        "Amazon",
+        "Netflix"
+    ],
+    [
+        "Durian",
+        "Nangka"
+    ],
+    [
+        "Parmasi",
+        "Dokter"
+    ],
+    [
+        "Helikopter",
+        "Drone"
+    ],
+    [
+        "Bola Basket",
+        "Bola Voli"
+    ],
+    [
+        "Speaker",
+        "Microphone"
+    ],
+    [
+        "Kompas",
+        "Map"
+    ],
+    [
+        "Papan Seluncur",
+        "Skateboard"
+    ],
+    [
+        "Salt",
+        "Sugar"
+    ],
+    [
+        "Sepatu Bola",
+        "Sepatu Lari"
+    ],
+    [
+        "Rok Pendek",
+        "Rok Panjang"
+    ],
+    [
+        "Movie",
+        "Actor"
+    ],
+    [
+        "Earphone",
+        "Headphone"
+    ],
+    [
+        "Meja Makan",
+        "Meja Kopi"
+    ],
+    [
+        "whiskey",
+        "vodka"
+    ],
+    [
+        "Raket",
+        "Bat"
+    ],
+    [
+        "Smartphone",
+        "Tablet"
+    ],
+    [
+        "Bantal",
+        "Guling"
+    ],
+    [
+        "Bayern Munich",
+        "Real Madrid"
+    ],
+    [
+        "Meja Belajar",
+        "Meja Makan"
+    ],
+    [
+        "Pantai",
+        "Gunung"
+    ],
+    [
+        "Kaus kaki",
+        "Stockings"
+    ],
+    [
+        "Sofa Kulit",
+        "Sofa Kain"
+    ],
+    [
+        "Anjing",
+        "Kucing"
+    ],
+    [
+        "Piano",
+        "Keyboard"
+    ],
+    [
+        "Tennis",
+        "Badminton"
+    ],
+    [
+        "Jellyfish",
+        "Octopus"
+    ],
+    [
+        "Gunung Merapi",
+        "Gunung Rinjani"
+    ],
+    [
+        "Platinum",
+        "Gold"
+    ],
+    [
+        "Lontong",
+        "Ketupat"
+    ],
+    [
+        "Nasi Uduk",
+        "Nasi Liwet"
+    ],
+    [
+        "Kelapa Ijo",
+        "Kelapa Muda"
+    ],
+    [
+        "Mie Indomie",
+        "Mie Sedap"
+    ],
+    [
+        "Rendang",
+        "Dendeng"
+    ],
+    [
+        "Gula Putih",
+        "Gula Merah"
+    ],
+    [
+        "Jokowi",
+        "Gibran"
+    ]
 ];
 
 export default wordPairs;

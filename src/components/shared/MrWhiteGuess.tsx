@@ -17,7 +17,7 @@ export const MrWhiteGuess = () => {
             <XCircle className="text-red-500" />
           )}
           <p className="text-white">
-            Mr. White guessed: <span className="font-bold">{gameState.mrWhiteGuess}</span>
+            Mr. White Menebak: <span className="font-bold">{gameState.mrWhiteGuess}</span>
           </p>
         </div>
       </div>

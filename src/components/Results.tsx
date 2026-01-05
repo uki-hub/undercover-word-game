@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { useSound } from "@/context/SoundContext";
 import { MrWhiteGuess } from "./shared/MrWhiteGuess";
 import { PlayerList } from "./shared/PlayerList";
+import { pickRandom } from "@/lib/utils";
 
 export const Results = () => {
   const { gameState, setGameState, submitMrWhiteGuess, eliminatePlayer, checkGameEnd } = useGame();
@@ -35,7 +36,7 @@ export const Results = () => {
         playSound("/sounds/undercover-eliminated.mp3");
         break;
       case "civilian":
-        playSound("/sounds/civilian-eliminated.mp3");
+        playSound(pickRandom(["/sounds/penduduk-mati (1).mp3", "/sounds/penduduk-mati (2).mp3", "/sounds/penduduk-mati (3).mp3", "/sounds/penduduk-mati (4).mp3"]));
         break;
     }
   };
@@ -108,35 +109,40 @@ export const Results = () => {
 
   return (
     <div className="max-w-md mx-auto p-6 space-y-6 animate-fade-in">
-      <h2 className="text-2xl font-bold text-center mb-4 text-white">Results</h2>
+      <h2 className="text-2xl font-bold text-center mb-4 text-white">Hasil Voting</h2>
 
       {showEliminatedCard && eliminatedPlayer && (
         <Card className="p-6 text-center glass-morphism">
           <h3 className="text-xl font-bold mb-4 text-white">
-            {currentPlayerGotEliminated ? "You have been eliminated" : `${eliminatedPlayer.name} was eliminated!`}
+            {currentPlayerGotEliminated ? "Penduduk desa mengantung dirimu" : `${eliminatedPlayer.name} telah di Gantung Mati!`}
           </h3>
           <p className="text-lg mb-2 text-white">
-            {currentPlayerGotEliminated ? "You" : "They"} were a{" "}
+            {currentPlayerGotEliminated ? "Kamu" : "Dia"} adalah seorang{" "}
             <span className="font-bold text-primary">
               {eliminatedPlayer.role === "mrwhite"
                 ? "Mr. White"
-                : eliminatedPlayer.role}
+                : eliminatedPlayer.role == "civilian" ? "Penduduk" : "Undercover"}
             </span>
           </p>
           {eliminatedPlayer.role !== "mrwhite" && currentPlayer?.isEliminated && !currentPlayerGotEliminated && (
             <p className="text-white/80">
-              Their word was: {eliminatedPlayer.word}
+              Tebakan Kata Mr.White: {eliminatedPlayer.word}
             </p>
           )}
+          <div className="">
+            <h2 className="font-bold">Tips:</h2>
+            <p className="text-sm text-white/70">Yang barusan mati boleh kasih Wasiat/Wejangan untuk penduduk yang masih HIDUP</p>
+            <p className="text-sm text-white/70">Setelah itu DIEM!!! gaboleh ngomong</p>
+          </div>
 
           {isMrWhiteGuessing && currentPlayerGotEliminated && (
             <div className="mt-4 space-y-4">
-              <p className="text-white/80">Make your final guess!</p>
+              <p className="text-white/80">Tebak kata rahasia nya!!!</p>
               <div className="flex gap-2">
                 <Input
                   value={guess}
                   onChange={(e) => setGuess(e.target.value)}
-                  placeholder="Enter your guess..."
+                  placeholder="Tebak kata nya..."
                   className="flex-1"
                 />
                 <Button
@@ -159,7 +165,7 @@ export const Results = () => {
         currentPlayerId={peer?.id}
         tieBreakerPlayers={
           gameState.mrWhiteGuess == null // prevent playing tiebreaker animation again after mrWhite guess
-          ? tieBreakerPlayers : []
+            ? tieBreakerPlayers : []
         }
         lastEliminatedId={gameState.lastEliminatedId}
       />

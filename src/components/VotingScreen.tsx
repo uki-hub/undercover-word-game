@@ -55,7 +55,7 @@ export const VotingScreen = () => {
 
   return (
     <div className="max-w-md mx-auto p-6 space-y-6 animate-fade-in">
-      <h2 className="text-2xl font-bold text-center mb-4 text-gradient">Vote to Eliminate</h2>
+      <h2 className="text-2xl font-bold text-center mb-4 text-gradient">Voting</h2>
 
       <PlayerList
         players={activePlayers}
