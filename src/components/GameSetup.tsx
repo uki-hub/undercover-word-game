@@ -55,7 +55,7 @@ export const GameSetup = () => {
             <h3 className="text-lg font-semibold text-white mb-6">Role Distribution</h3>
             <div className="space-y-6">
               <div className="text-center text-white/70">
-                {gameState.players.length - roleDistribution.mrWhites - roleDistribution.undercovers} civilians
+                {gameState.players.length - roleDistribution.mrWhites - roleDistribution.undercovers - roleDistribution.fool - roleDistribution.traitor} civilians
               </div>
               <div className="flex items-center justify-between gap-4">
                 <Button
@@ -119,6 +119,77 @@ export const GameSetup = () => {
                     {
                       ...roleDistribution,
                       mrWhites: roleDistribution.mrWhites + 1
+                    },
+                    gameState.players.length)
+                  }
+                  className="bg-white/10 hover:bg-white/20 disabled:opacity-50"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="flex items-center justify-between gap-4">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => updateRoleDistribution({ ...roleDistribution, fool: roleDistribution.fool - 1 })}
+                  disabled={!isHost || !distributionMeetsLimits(
+                    {
+                      ...roleDistribution,
+                      fool: roleDistribution.fool - 1
+                    },
+                    gameState.players.length)
+                  }
+                  className="bg-white/10 hover:bg-white/20 disabled:opacity-50"
+                >
+                  <Minus className="h-4 w-4" />
+                </Button>
+                <div className="flex-1 text-center text-white">
+                  {roleDistribution.fool} fools
+                </div>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => updateRoleDistribution({ ...roleDistribution, fool: roleDistribution.fool + 1 })}
+                  disabled={!isHost || !distributionMeetsLimits(
+                    {
+                      ...roleDistribution,
+                      fool: roleDistribution.fool + 1
+                    },
+                    gameState.players.length)
+                  }
+                  className="bg-white/10 hover:bg-white/20 disabled:opacity-50"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+
+              <div className="flex items-center justify-between gap-4">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => updateRoleDistribution({ ...roleDistribution, traitor: roleDistribution.traitor - 1 })}
+                  disabled={!isHost || !distributionMeetsLimits(
+                    {
+                      ...roleDistribution,
+                      traitor: roleDistribution.traitor - 1
+                    },
+                    gameState.players.length)
+                  }
+                  className="bg-white/10 hover:bg-white/20 disabled:opacity-50"
+                >
+                  <Minus className="h-4 w-4" />
+                </Button>
+                <div className="flex-1 text-center text-white">
+                  {roleDistribution.traitor} traitors
+                </div>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => updateRoleDistribution({ ...roleDistribution, traitor: roleDistribution.traitor + 1 })}
+                  disabled={!isHost || !distributionMeetsLimits(
+                    {
+                      ...roleDistribution,
+                      traitor: roleDistribution.traitor + 1
                     },
                     gameState.players.length)
                   }

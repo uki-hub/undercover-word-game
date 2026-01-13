@@ -7,6 +7,7 @@ import { useSound } from "@/context/SoundContext";
 import { useEffect } from "react";
 import { MrWhiteGuess } from "./shared/MrWhiteGuess";
 import { pickRandom } from "@/lib/utils";
+import { GameEngine } from "@/lib/gameEngine";
 
 export const GameEnd = () => {
   const { gameState, resetGame, setGameState } = useGame();
@@ -16,32 +17,17 @@ export const GameEnd = () => {
   const currentPlayer = gameState.players.find(p => p.id === peer?.id);
 
   useEffect(() => {
-    // Update scores for winners
-    const updatedPlayers = gameState.players.map(player => {
-      const currentScore = player.score || 0;
-      let pointsToAdd = 0;
-
-      if (gameState.winner === "civilian" && player.role === "civilian") {
-        pointsToAdd = 2;
-      } else if (gameState.winner === "undercover" && player.role === "undercover") {
-        pointsToAdd = 10;
-      } else if (gameState.winner === "mrwhite" && player.role === "mrwhite") {
-        pointsToAdd = 6;
-      } else if (gameState.winner === "infiltrators") {
-        if (player.role === "undercover") pointsToAdd = 10;
-        if (player.role === "mrwhite") pointsToAdd = 6;
-      }
-
-      return {
-        ...player,
-        score: currentScore + pointsToAdd,
-      };
-    });
+    // Use GameEngine to calculate scores
+    const updatedPlayers = GameEngine.calculateScores(gameState.players, gameState.winner || "");
 
     setGameState({ ...gameState, players: updatedPlayers });
 
     switch (gameState.winner) {
       case "civilian":
+        playSound(pickRandom(["/sounds/penduduk-menang (1).mp3", "/sounds/penduduk-menang (2).mp3", "/sounds/penduduk-menang (3).mp3"]));
+        break;
+      case "fool":
+        // Play a special sound for fool winning if you have one, otherwise use default
         playSound(pickRandom(["/sounds/penduduk-menang (1).mp3", "/sounds/penduduk-menang (2).mp3", "/sounds/penduduk-menang (3).mp3"]));
         break;
       case "infiltrators":
@@ -55,6 +41,9 @@ export const GameEnd = () => {
   const getWinnerPlayers = () => {
     if (gameState.winner === "infiltrators") {
       return gameState.players.filter(p => p.role === "undercover" || p.role === "mrwhite");
+    }
+    if (gameState.winner === "fool") {
+      return gameState.players.filter(p => p.role === "fool");
     }
     return gameState.players.filter(p => p.role === gameState.winner);
   };
@@ -80,7 +69,11 @@ export const GameEnd = () => {
               {gameState.winner === "undercover" && "Undercover Menang!!!"}
               {gameState.winner === "mrwhite" && "Mr. White Menang!!!"}
               {gameState.winner === "infiltrators" && "Infiltrators Menang!!!"}
+              {gameState.winner === "fool" && "🎭 Fool Menang!!! 🃏"}
             </h2>
+            {gameState.winner === "fool" && (
+              <p className="text-yellow-300 mt-2">Kalian semua kena tipu!</p>
+            )}
           </div>
 
           <div className="space-y-3">
@@ -97,7 +90,10 @@ export const GameEnd = () => {
                 <div>
                   <p className="text-lg block max-w-[250px] truncate text-white">{player.name}</p>
                   <p className="text-sm text-white/70">
-                    {player.role == "civilian" ? "Penduduk" : player.role}{player.word && ` - ${player.word}`}
+                    {player.originalRole === "traitor" 
+                      ? `${GameEngine.getRoleDisplayName(player.originalRole)} → ${GameEngine.getRoleDisplayName(player.role)}`
+                      : GameEngine.getRoleDisplayName(player.role)
+                    }{player.word && ` - ${player.word}`}
                   </p>
                 </div>
               </div>

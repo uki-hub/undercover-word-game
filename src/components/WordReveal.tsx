@@ -1,21 +1,21 @@
 import { useGame } from "../context/GameContext";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { usePeer } from "../context/PeerContext";
 import { PlayerList } from "./shared/PlayerList";
+import { MrWhiteCard } from "./shared/RoleCards/MrWhiteCard";
+import { CivilianUndercoverCard } from "./shared/RoleCards/CivilianUndercoverCard";
+import { FoolCard } from "./shared/RoleCards/FoolCard";
+import { TraitorCard } from "./shared/RoleCards/TraitorCard";
 import { useEffect, useState } from "react";
 import { useSound } from "@/context/SoundContext";
 import { Input } from "./ui/input";
 import { toast } from "sonner";
-import { Eye, EyeOff } from "lucide-react";
 
 export const WordReveal = () => {
   const { gameState, setPhase, submitDescription, rerollWords, secondRound, editKata } = useGame();
   const { peer, isHost, sendToHost } = usePeer();
   const { playSound } = useSound();
 
-  const [hideWord, setHideWord] = useState(false);
-  const [hideTips, setHideTips] = useState(false);
   const [description, setDescription] = useState("");
 
   useEffect(() => {
@@ -24,7 +24,7 @@ export const WordReveal = () => {
     } else {
       playSound("/sounds/new-page.mp3");
     }
-  }, []);
+  }, [gameState.currentRound, playSound]);
 
   const currentPlayer = gameState.players.find(p => p.id === peer?.id);
 
@@ -86,55 +86,34 @@ export const WordReveal = () => {
 
   return (
     <div className="max-w-md md:max-w-2xl mx-auto p-3 space-y-4 animate-fade-in">
-      <h2 className="text-2xl font-bold text-center mb-4 text-white">{currentPlayer.isEliminated ? "Kamu di Gantung" : "Diskusi"}</h2>
-      <Card className="p-6 text-center glass-morphism">
-        <div className="">
-          {currentPlayer.role === "mrwhite" ? (
-            <p className="text-lg text-white">Kamu Adalah <span className="font-bold text-primary">Mr.White</span></p>
-          ) : (
-            <div className="w-full">
-              <p className="text-lg text-white">
-                Kata kamu {currentPlayer.isEliminated ? "adalah" : "adalah"}: <span className="font-bold text-primary">{hideWord ? "*****" : currentPlayer.word}</span>
-                <div
-                  onClick={() => setHideWord(!hideWord)}
-                  className="inline ml-2.5">
-                  {hideWord ? <Eye className="inline stroke-gray-200 size-[20px] cursor-pointer" /> : <EyeOff className="inline stroke-gray-200 size-[20px] cursor-pointer" />}
-                </div>
-              </p>
-            </div>
+      <h2 className="text-2xl font-bold text-center mb-4 text-white">{currentPlayer.isEliminated ? "Kamu sudah mati" : "Diskusi"}</h2>
+      
+      {!currentPlayer.isEliminated && (
+        <>
+          {currentPlayer.role === "mrwhite" && <MrWhiteCard />}
 
+          {(currentPlayer.role === "civilian" || currentPlayer.role === "undercover") && (
+            <CivilianUndercoverCard 
+              word={currentPlayer.word || ""}
+            />
           )}
 
-          <h2 onClick={() => setHideTips(!hideTips)} className="mt-4 cursor-pointer underline hover:font-semibold">{hideTips ? "Show Tips" : "Hide Tips"}</h2>
-          {
-            hideTips ? <></> : <div className="animate-fade-in">
-              <div className="text-white/70">
-                <p className="text-sm">Di inget dan dipahami baik2 kids kata yang didapat</p>
-                <p className="text-sm">Jangan jadi villager tolol</p>
-              </div>
-              <br />
-              <p className="text-sm text-white/70">
-                {currentPlayer.role === "mrwhite"
-                  ? (
-                    <>
-                      Dengerin baik-baik dan coba nyamain diri sama yang lain dari ciri2 kata pemain lain
-                      <br />
-                      Cari tahu kata rahasianya dari deskripsi yang orang lain berikan.
-                    </>
-                  )
-                  : (
-                    <>
-                      Jelaskan ciri2 kata itu tanpa terlalu detail
-                      <br />
-                      Pinter-pinter, bisa jadi ada penyusup/lawan yang menyamar dari kata yang kita berikan
-                    </>
-                  )}
-              </p>
-            </div>
-          }
+          {currentPlayer.role === "fool" && (
+            <FoolCard 
+              deathsToTrigger={currentPlayer.deathsToTrigger || 0} 
+              currentDeathCount={gameState.deathCount || 0}
+            />
+          )}
 
-        </div>
-      </Card>
+          {currentPlayer.role === "traitor" && (
+            <TraitorCard 
+              word={currentPlayer.word || ""}
+              transformationRound={currentPlayer.traitorTransformationRound || 0}
+              currentRound={gameState.currentRound}
+            />
+          )}
+        </>
+      )}
 
       <div className="mt-8 space-y-4">
         <h3 className="text-xl font-semibold text-white text-center">{isMyTurn ? "Jalan Woi!!!, Jelasin Kata2 Lu" : "Urutan Jalan"}</h3>

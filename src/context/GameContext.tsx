@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { calculateDefaultDistribution } from "../config/roleDistribution";
 import { useTranslation } from "react-i18next";
 import { shuffle } from "@/lib/utils";
+import { GameEngine } from "@/lib/gameEngine";
 
 interface GameContextType {
   gameState: GameState;
@@ -113,27 +114,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   // };
 
   const checkGameEnd = (players: Player[]) => {
-    const alivePlayers = players.filter(p => !p.isEliminated);
-    const aliveCivilians = alivePlayers.filter(p => p.role === "civilian");
-    const aliveUndercovers = alivePlayers.filter(p => p.role === "undercover");
-    const aliveMrWhites = alivePlayers.filter(p => p.role === "mrwhite");
-
-    if (aliveUndercovers.length === 0 && aliveMrWhites.length === 0) {
-      if (aliveCivilians.length === 0) return null;
-      return "civilian";
-    }
-
-    if (aliveCivilians.length <= 1) {
-      if (aliveUndercovers.length > 0) {
-        if (aliveMrWhites.length > 0) {
-          return "infiltrators";
-        }
-        return "undercover";
-      }
-      return "mrwhite";
-    }
-
-    return null;
+    return GameEngine.checkWinCondition(players);
   };
 
   const generateAndAssignWords = (players: Player[]) => {
@@ -141,9 +122,9 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     const randomPair = wordPairs[Math.floor(Math.random() * wordPairs.length)];
     const [majorityWord, undercoverWord] = randomPair;
 
-    const updatedPlayers = players.map(player => ({
-      ...player,
-      word: player.role === "mrwhite" ? "" : player.role === "undercover" ? undercoverWord : majorityWord,
+    // Use GameEngine to assign words based on role configuration
+    const updatedPlayers = GameEngine.assignWords(players, majorityWord, undercoverWord).map(p => ({
+      ...p,
       submittedDescriptions: undefined,
     }));
 
@@ -177,14 +158,19 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
         }
 
         const shuffledPlayers = shuffle(prev.players);
-        const { undercovers, mrWhites } = prev.roleDistribution;
+        const { undercovers, mrWhites, fool, traitor } = prev.roleDistribution;
 
         const playersWithRoles = shuffledPlayers.map((player, index) => {
           let role: PlayerRole = "civilian";
-          if (index < mrWhites) {
+          
+          if (index < fool) {
+            role = "fool";
+          } else if (index < fool + mrWhites) {
             role = "mrwhite";
-          } else if (index < mrWhites + undercovers) {
+          } else if (index < fool + mrWhites + undercovers) {
             role = "undercover";
+          } else if (index < fool + mrWhites + undercovers + traitor) {
+            role = "traitor";
           }
 
           return {
@@ -194,7 +180,10 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
           };
         });
 
-        const { players, majorityWord, undercoverWord } = generateAndAssignWords(playersWithRoles);
+        // Assign role configurations using GameEngine
+        const playersWithConfigs = GameEngine.assignRoleConfigs(playersWithRoles, prev.players.length);
+        
+        const { players, majorityWord, undercoverWord } = generateAndAssignWords(playersWithConfigs);
         const speakingOrder = generateSpeakingOrder(players);
 
         return {
@@ -206,11 +195,21 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
           undercoverWord,
           currentRound: 1,
           mrWhiteGuess: undefined,
+          deathCount: 0,
         };
       } else {
+        // Check and handle Traitor transformation
+        const playersAfterTransformation = GameEngine.checkTraitorTransformation(
+          prev.players,
+          prev.currentRound,
+          prev.majorityWord,
+          prev.undercoverWord
+        );
+
         return {
           ...prev,
-          speakingOrder: generateSpeakingOrder(prev.players),
+          players: playersAfterTransformation,
+          speakingOrder: generateSpeakingOrder(playersAfterTransformation),
           phase: "wordReveal",
           votingResults: {},
           currentRound: prev.currentRound + 1,
@@ -282,15 +281,22 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
 
   const eliminatePlayer = (eliminatedId: string) => {
     setGameState((prev) => {
-      const updatedPlayers = prev.players.map(p =>
-        p.id === eliminatedId ? { ...p, isEliminated: true } : { ...p }
+      let updatedPlayers = prev.players.map(p =>
+        p.id === eliminatedId ? { ...p, isEliminated: true, eliminationReason: "voted" as const } : { ...p }
       );
+
+      // Track death for Fool auto-elimination
+      const newDeathCount = (prev.deathCount || 0) + 1;
+      
+      // Use GameEngine to check and handle auto-elimination
+      updatedPlayers = GameEngine.checkAutoElimination(updatedPlayers, newDeathCount);
 
       return {
         ...prev,
         players: updatedPlayers,
         phase: "results",
         lastEliminatedId: eliminatedId,
+        deathCount: newDeathCount,
       };
     });
   };
@@ -318,7 +324,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
 
   const resetGame = () => {
     setGameState((prev) => {
-      const players = prev.players.map(p => ({ ...p, isEliminated: false, submittedDescription: undefined }));
+      const players = prev.players.map(p => ({ ...p, isEliminated: false, submittedDescriptions: undefined, role: undefined, roleConfig: undefined, deathsToTrigger: undefined, eliminationReason: undefined }));
       return {
         players: players,
         phase: "setup",
@@ -328,6 +334,8 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
         mrWhiteGuess: undefined,
         roleDistribution: prev.roleDistribution,
         currentPlayerIndex: 0,
+        deathCount: 0,
+        votingResults: {},
       };
     });
   };
@@ -345,7 +353,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
 
   const editKata = () => {
     setGameState((prev) => {
-      debugger;
+      // debugger;
       const lastPlayerIndex = prev.currentPlayerIndex - 1;
       const lastPlayerId = prev.speakingOrder[lastPlayerIndex];
 

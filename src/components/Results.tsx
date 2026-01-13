@@ -1,18 +1,17 @@
 import { useGame } from "../context/GameContext";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { usePeer } from "@/context/PeerContext";
-import { Input } from "@/components/ui/input";
-import { useEffect, useState } from "react";
-import { Send } from "lucide-react";
+import { useEffect, useState, useCallback } from "react";
 import { toast } from "sonner";
 import { useSound } from "@/context/SoundContext";
-import { MrWhiteGuess } from "./shared/MrWhiteGuess";
 import { PlayerList } from "./shared/PlayerList";
+import { CurrentPlayerEliminatedCard } from "./shared/EliminationCards/CurrentPlayerEliminatedCard";
+import { OtherPlayerEliminatedCard } from "./shared/EliminationCards/OtherPlayerEliminatedCard";
 import { pickRandom } from "@/lib/utils";
+import { GameEngine } from "@/lib/gameEngine";
 
 export const Results = () => {
-  const { gameState, setGameState, submitMrWhiteGuess, eliminatePlayer, checkGameEnd } = useGame();
+  const { gameState, setGameState, submitMrWhiteGuess } = useGame();
   const { peer, isHost, sendToHost } = usePeer();
   const { playSound } = useSound();
   const [guess, setGuess] = useState("");
@@ -23,7 +22,7 @@ export const Results = () => {
   const eliminatedPlayer = gameState.players
     .find(p => p.id === gameState.lastEliminatedId);
 
-  const playEliminationSound = () => {
+  const playEliminationSound = useCallback(() => {
     if (gameState.mrWhiteGuess) {
       return playSound("/sounds/mrwhite-wrong-guess.mp3");
     }
@@ -35,11 +34,15 @@ export const Results = () => {
       case "undercover":
         playSound("/sounds/undercover-eliminated.mp3");
         break;
+      case "traitor":
+        // Traitor uses undercover sound since they're on the infiltrator side
+        playSound("/sounds/undercover-eliminated.mp3");
+        break;
       case "civilian":
         playSound(pickRandom(["/sounds/penduduk-mati (1).mp3", "/sounds/penduduk-mati (2).mp3", "/sounds/penduduk-mati (3).mp3", "/sounds/penduduk-mati (4).mp3"]));
         break;
     }
-  };
+  }, [gameState.mrWhiteGuess, eliminatedPlayer?.role, playSound]);
 
   useEffect(() => {
     if (gameState.lastEliminatedId && gameState.votingResults) {
@@ -66,7 +69,7 @@ export const Results = () => {
         playEliminationSound();
       }
     }
-  }, [gameState.lastEliminatedId, gameState.votingResults]);
+  }, [gameState.lastEliminatedId, gameState.votingResults, playEliminationSound]);
 
   const currentPlayerGotEliminated = eliminatedPlayer?.id === currentPlayer?.id;
   const isMrWhiteGuessing = eliminatedPlayer?.role === "mrwhite" && !gameState.mrWhiteGuess;
@@ -93,16 +96,34 @@ export const Results = () => {
     }
   };
 
+  const handleGuessChange = (value: string) => {
+    setGuess(value);
+  };
+
   const handleContinue = () => {
-    eliminatePlayer(eliminatedPlayer?.id);
     setGameState((prev) => {
-      const gameWinner = checkGameEnd(prev.players);
+      // First eliminate the player
+      let updatedPlayers = prev.players.map(p =>
+        p.id === eliminatedPlayer?.id ? { ...p, isEliminated: true, eliminationReason: "voted" as const } : { ...p }
+      );
+
+      // Track death for Fool auto-elimination
+      const newDeathCount = (prev.deathCount || 0) + 1;
+      
+      // Use GameEngine to check and handle auto-elimination
+      updatedPlayers = GameEngine.checkAutoElimination(updatedPlayers, newDeathCount);
+
+      // Now check game end with updated players
+      const gameWinner = GameEngine.checkWinCondition(updatedPlayers);
 
       return {
         ...prev,
+        players: updatedPlayers,
+        deathCount: newDeathCount,
         phase: gameWinner ? "gameEnd" : "discussion",
         winner: gameWinner || undefined,
         votingResults: {},
+        currentPlayerIndex: 0,
       };
     });
   };
@@ -112,51 +133,25 @@ export const Results = () => {
       <h2 className="text-2xl font-bold text-center mb-4 text-white">Hasil Voting</h2>
 
       {showEliminatedCard && eliminatedPlayer && (
-        <Card className="p-6 text-center glass-morphism">
-          <h3 className="text-xl font-bold mb-4 text-white">
-            {currentPlayerGotEliminated ? "Penduduk desa mengantung dirimu" : `${eliminatedPlayer.name} telah di Gantung Mati!`}
-          </h3>
-          <p className="text-lg mb-2 text-white">
-            {currentPlayerGotEliminated ? "Kamu" : "Dia"} adalah seorang{" "}
-            <span className="font-bold text-primary">
-              {eliminatedPlayer.role === "mrwhite"
-                ? "Mr. White"
-                : eliminatedPlayer.role == "civilian" ? "Penduduk" : "Undercover"}
-            </span>
-          </p>
-          {eliminatedPlayer.role !== "mrwhite" && currentPlayer?.isEliminated && !currentPlayerGotEliminated && (
-            <p className="text-white/80">
-              Tebakan Kata Mr.White: {eliminatedPlayer.word}
-            </p>
-          )}
-          <div className="">
-            <h2 className="font-bold">Tips:</h2>
-            <p className="text-sm text-white/70">Yang barusan mati boleh kasih Wasiat/Wejangan untuk penduduk yang masih HIDUP</p>
-            <p className="text-sm text-white/70">Setelah itu DIEM!!! gaboleh ngomong</p>
-          </div>
-
-          {isMrWhiteGuessing && currentPlayerGotEliminated && (
-            <div className="mt-4 space-y-4">
-              <p className="text-white/80">Tebak kata rahasia nya!!!</p>
-              <div className="flex gap-2">
-                <Input
-                  value={guess}
-                  onChange={(e) => setGuess(e.target.value)}
-                  placeholder="Tebak kata nya..."
-                  className="flex-1"
-                />
-                <Button
-                  onClick={handleGuessSubmit}
-                  className="bg-primary hover:bg-primary/90"
-                >
-                  <Send className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          )}
-
-          <MrWhiteGuess />
-        </Card>
+        currentPlayerGotEliminated ? (
+          <CurrentPlayerEliminatedCard
+            playerName={eliminatedPlayer.name}
+            role={eliminatedPlayer.role}
+            originalRole={eliminatedPlayer.originalRole}
+            isMrWhiteGuessing={isMrWhiteGuessing}
+            guess={guess}
+            onGuessChange={handleGuessChange}
+            onGuessSubmit={handleGuessSubmit}
+          />
+        ) : (
+          <OtherPlayerEliminatedCard
+            playerName={eliminatedPlayer.name}
+            role={eliminatedPlayer.role}
+            originalRole={eliminatedPlayer.originalRole}
+            word={eliminatedPlayer.word}
+            showWord={eliminatedPlayer.role !== "mrwhite" && currentPlayer?.isEliminated}
+          />
+        )
       )}
 
       <PlayerList
