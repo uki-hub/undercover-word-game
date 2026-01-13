@@ -25,7 +25,7 @@ export const PeerProvider = ({ children }: { children: React.ReactNode }) => {
   const [connections, setConnections] = useState<Record<string, DataConnection>>({});
   const [hostId, setHostId] = useState<string | null>(null);
   const [isHost, setIsHost] = useState(false);
-  const { gameState, setGameState, addPlayer, removePlayer, submitMrWhiteGuess, submitVote, submitDescription } = useGame();
+  const { gameState, setGameState, addPlayer, removePlayer, submitMrWhiteGuess, submitVote, submitDescription, submitDetectiveScan, submitSaboteurSilence } = useGame();
 
   useEffect(() => {
     const newPeer = new Peer();
@@ -103,6 +103,14 @@ export const PeerProvider = ({ children }: { children: React.ReactNode }) => {
           case "SUBMIT_DESCRIPTION":
             console.debug("Received description:", data);
             submitDescription(data.playerId, data.description);
+            break;
+          case "DETECTIVE_SCAN":
+            console.debug("Received detective scan:", data);
+            submitDetectiveScan(data.detectiveId, data.player1Id, data.player2Id);
+            break;
+          case "SABOTEUR_SILENCE":
+            console.debug("Received saboteur silence:", data);
+            submitSaboteurSilence(data.saboteurId, data.targetId);
             break;
           case "MR_WHITE_GUESS":
             console.debug("Received Mr. White guess:", data);

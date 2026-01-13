@@ -4,6 +4,7 @@ import { useGame } from "../context/GameContext";
 import { usePeer } from "../context/PeerContext";
 import { GameSetup } from "../components/GameSetup";
 import { GameLobby } from "../components/GameLobby";
+import { ActionScreen } from "../components/ActionScreen";
 import { WordReveal } from "../components/WordReveal";
 import { MultiplayerSetup } from "../components/MultiplayerSetup";
 import { VotingScreen } from "../components/VotingScreen";
@@ -30,6 +31,8 @@ const GameContent = () => {
   }
 
   switch (gameState.phase) {
+    case "action":
+      return <ActionScreen />;
     case "wordReveal":
       return <WordReveal />;
     case "voting":

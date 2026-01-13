@@ -7,7 +7,7 @@
 
 # Roles
 
-## Fool
+## Fool (TESTING)
 **Team:** Solo  
 **Word:** Random Word  
 
@@ -16,7 +16,7 @@ Wins if voted out, but will die on their own after 2–3 players die (depending 
 
 ---
 
-## Traitor
+## Traitor (TESTING)
 **Team:** Civilian → Undercover  
 **Word:** Civilian / Undercover Word  
 
@@ -26,7 +26,7 @@ After passing the round limit, the player becomes an undercover.
 
 ---
 
-## Detective
+## Detective (Testing)
 **Team:** Civilian  
 **Word:** Civilian Word  
 
@@ -47,12 +47,12 @@ A civilian-aligned role with the power to cancel a voting phase once per game.
 
 ---
 
-## Saboteur
+## Sabotase (TESTING)
 **Team:** Undercover  
 **Word:** Undercover Word  
 
 **Objective:**  
-Can silence 1 player, preventing them from giving their word during a round.
+Before WordReveal This Role can select 1 player to silence, preventing them from giving their word during a round.
 
 ---
 

@@ -30,13 +30,20 @@ export class GameEngine {
         case "traitor":
           roleConfig = RoleConfig.traitor(playerCount);
           break;
+        case "detective":
+          roleConfig = RoleConfig.detective();
+          break;
+        case "saboteur":
+          roleConfig = RoleConfig.saboteur();
+          break;
       }
 
       return {
         ...player,
         roleConfig,
         deathsToTrigger: roleConfig?.type === "fool" ? roleConfig.autoEliminationThreshold : undefined,
-        traitorTransformationRound: roleConfig?.type === "traitor" ? roleConfig.transformationThreshold : undefined
+        traitorTransformationRound: roleConfig?.type === "traitor" ? roleConfig.transformationThreshold : undefined,
+        actionUseCounter: 0
       };
     });
   }
@@ -58,6 +65,10 @@ export class GameEngine {
         if (player.roleConfig.type === "civilian") {
           word = majorityWord;
         } else if (player.roleConfig.type === "undercover") {
+          word = undercoverWord;
+        } else if (player.roleConfig.type === "detective") {
+          word = majorityWord;
+        } else if (player.roleConfig.type === "saboteur") {
           word = undercoverWord;
         } else if (player.roleConfig.type === "traitor") {
           // Traitor gets civilian word, or undercover word if already transformed
@@ -211,6 +222,8 @@ export class GameEngine {
       case "mrwhite": return "Mr. White";
       case "fool": return "Fool";
       case "traitor": return "Traitor";
+      case "detective": return "Detective";
+      case "saboteur": return "Sabotase";
       default: return "Unknown";
     }
   }
@@ -224,6 +237,8 @@ export class GameEngine {
       case "fool": return "text-yellow-400";
       case "undercover": return "text-red-400";
       case "traitor": return "text-purple-400";
+      case "detective": return "text-blue-400";
+      case "saboteur": return "text-orange-400";
       default: return "text-primary";
     }
   }

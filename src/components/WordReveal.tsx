@@ -6,6 +6,8 @@ import { MrWhiteCard } from "./shared/RoleCards/MrWhiteCard";
 import { CivilianUndercoverCard } from "./shared/RoleCards/CivilianUndercoverCard";
 import { FoolCard } from "./shared/RoleCards/FoolCard";
 import { TraitorCard } from "./shared/RoleCards/TraitorCard";
+import { DetectiveCard } from "./shared/RoleCards/DetectiveCard";
+import { SaboteurCard } from "./shared/RoleCards/SaboteurCard";
 import { useEffect, useState } from "react";
 import { useSound } from "@/context/SoundContext";
 import { Input } from "./ui/input";
@@ -26,6 +28,25 @@ export const WordReveal = () => {
     }
   }, [gameState.currentRound, playSound]);
 
+  // Auto-skip silenced players' turns
+  useEffect(() => {
+    if (!isHost) return;
+
+    const gameCurrentPlayerIndex = gameState.currentPlayerIndex;
+    const gameCurrentPlayerId = gameState.speakingOrder?.[gameCurrentPlayerIndex];
+    const currentTurnPlayer = gameState.players.find(p => p.id === gameCurrentPlayerId);
+
+    // If current player is silenced, automatically advance to next player
+    if (currentTurnPlayer && gameState.silencedPlayers?.includes(currentTurnPlayer.id)) {
+      // Add a small delay to avoid too rapid advancement
+      const timer = setTimeout(() => {
+        submitDescription(currentTurnPlayer.id, "[Silenced - Skipped Turn]");
+      }, 500);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [gameState.currentPlayerIndex, gameState.silencedPlayers, gameState.speakingOrder, gameState.players, isHost, submitDescription]);
+
   const currentPlayer = gameState.players.find(p => p.id === peer?.id);
 
   const handleSecondRound = () => {
@@ -41,6 +62,12 @@ export const WordReveal = () => {
   };
 
   const handleSubmitDescription = () => {
+    // Check if player is silenced
+    if (gameState.silencedPlayers?.includes(currentPlayer.id)) {
+      toast.error("Kamu di-silence! Tidak bisa submit deskripsi");
+      return;
+    }
+
     if (!description.trim()) return;
 
     if (description.trim().toLowerCase() === currentPlayer.word.toLowerCase()) {
@@ -112,13 +139,40 @@ export const WordReveal = () => {
               currentRound={gameState.currentRound}
             />
           )}
+
+          {currentPlayer.role === "detective" && (
+            <DetectiveCard 
+              word={currentPlayer.word || ""}
+              scanResult={
+                gameState.actionResults?.[currentPlayer.id] 
+                  ? {
+                      player1Name: gameState.players.find(p => p.id === gameState.actionResults![currentPlayer.id].player1Id)?.name || "",
+                      player2Name: gameState.players.find(p => p.id === gameState.actionResults![currentPlayer.id].player2Id)?.name || "",
+                      result: gameState.actionResults[currentPlayer.id].result
+                    }
+                  : undefined
+              }
+            />
+          )}
+
+          {currentPlayer.role === "saboteur" && (
+            <SaboteurCard 
+              word={currentPlayer.word || ""}
+              hasSilencedTarget={gameState.silencedPlayers?.includes(currentPlayer.id) || false}
+              silencedPlayerName={
+                gameState.silencedPlayers?.length ? 
+                gameState.players.find(p => gameState.silencedPlayers?.includes(p.id))?.name : 
+                undefined
+              }
+            />
+          )}
         </>
       )}
 
       <div className="mt-8 space-y-4">
         <h3 className="text-xl font-semibold text-white text-center">{isMyTurn ? "Jalan Woi!!!, Jelasin Kata2 Lu" : "Urutan Jalan"}</h3>
 
-        {isMyTurn && (
+        {isMyTurn && !gameState.silencedPlayers?.includes(currentPlayer.id) && (
           <div className="relative flex h-10 w-full min-w-[200px]">
             <Input
               value={description}

@@ -16,6 +16,8 @@ interface GameContextType {
   submitVote: (voterId: string, targetId: string) => void;
   submitMrWhiteGuess: (guess: string) => void;
   submitDescription: (playerId: string, description: string) => void;
+  submitDetectiveScan: (detectiveId: string, player1Id: string, player2Id: string) => void;
+  submitSaboteurSilence: (saboteurId: string, targetId: string) => void;
   resetGame: () => void;
   updateRoleDistribution: (distribution: RoleDistribution) => void;
   checkGameEnd: (players: Player[]) => string | null;
@@ -158,7 +160,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
         }
 
         const shuffledPlayers = shuffle(prev.players);
-        const { undercovers, mrWhites, fool, traitor } = prev.roleDistribution;
+        const { undercovers, mrWhites, fool, traitor, detective, saboteur } = prev.roleDistribution;
 
         const playersWithRoles = shuffledPlayers.map((player, index) => {
           let role: PlayerRole = "civilian";
@@ -171,6 +173,10 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
             role = "undercover";
           } else if (index < fool + mrWhites + undercovers + traitor) {
             role = "traitor";
+          } else if (index < fool + mrWhites + undercovers + traitor + detective) {
+            role = "detective";
+          } else if (index < fool + mrWhites + undercovers + traitor + detective + saboteur) {
+            role = "saboteur";
           }
 
           return {
@@ -186,16 +192,20 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
         const { players, majorityWord, undercoverWord } = generateAndAssignWords(playersWithConfigs);
         const speakingOrder = generateSpeakingOrder(players);
 
+        // Check if there are any detectives or saboteurs who can act
+        const hasActiveActionRoles = players.some(p => (p.role === "detective" || p.role === "saboteur") && !p.isEliminated);
+
         return {
           ...prev,
           players,
           speakingOrder,
-          phase: "wordReveal",
+          phase: hasActiveActionRoles ? "action" : "wordReveal",
           majorityWord,
           undercoverWord,
           currentRound: 1,
           mrWhiteGuess: undefined,
           deathCount: 0,
+          actionResults: {},
         };
       } else {
         // Check and handle Traitor transformation
@@ -206,11 +216,14 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
           prev.undercoverWord
         );
 
+        // Check if there are any detectives or saboteurs who can act
+        const hasActiveActionRoles = playersAfterTransformation.some(p => (p.role === "detective" || p.role === "saboteur") && !p.isEliminated);
+
         return {
           ...prev,
           players: playersAfterTransformation,
           speakingOrder: generateSpeakingOrder(playersAfterTransformation),
-          phase: "wordReveal",
+          phase: hasActiveActionRoles ? "action" : "wordReveal",
           votingResults: {},
           currentRound: prev.currentRound + 1,
           mrWhiteGuess: undefined,
@@ -365,6 +378,88 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     });
   }
 
+  const submitDetectiveScan = (detectiveId: string, player1Id: string, player2Id: string) => {
+    setGameState((prev) => {
+      const detective = prev.players.find(p => p.id === detectiveId);
+      const player1 = prev.players.find(p => p.id === player1Id);
+      const player2 = prev.players.find(p => p.id === player2Id);
+
+      if (!detective || !player1 || !player2) {
+        toast.error("Invalid scan targets");
+        return prev;
+      }
+
+      // Check if detective has actions remaining
+      const maxActions = detective.roleConfig?.maxActionUsageCount || 0;
+      const usedActions = detective.actionUseCounter || 0;
+      if (usedActions >= maxActions) {
+        toast.error("Detective has no scans remaining");
+        return prev;
+      }
+
+      // Determine scan result
+      const sameWord = player1.word === player2.word;
+      const scanResult = {
+        detectiveId,
+        player1Id,
+        player2Id,
+        result: (sameWord ? "=" : "≠") as "=" | "≠",
+        round: prev.currentRound
+      };
+
+      // Update detective action counter
+      const updatedPlayers = prev.players.map(p =>
+        p.id === detectiveId
+          ? { ...p, actionUseCounter: (p.actionUseCounter || 0) + 1 }
+          : p
+      );
+
+      return {
+        ...prev,
+        players: updatedPlayers,
+        actionResults: {
+          ...(prev.actionResults || {}),
+          [detectiveId]: scanResult
+        },
+        phase: "wordReveal"
+      };
+    });
+  };
+
+  const submitSaboteurSilence = (saboteurId: string, targetId: string) => {
+    setGameState((prev) => {
+      const saboteur = prev.players.find(p => p.id === saboteurId);
+      const target = prev.players.find(p => p.id === targetId);
+
+      if (!saboteur || !target) {
+        toast.error("Invalid silence target");
+        return prev;
+      }
+
+      // Check if saboteur has actions remaining
+      const maxActions = saboteur.roleConfig?.maxActionUsageCount || 0;
+      const usedActions = saboteur.actionUseCounter || 0;
+      if (usedActions >= maxActions) {
+        toast.error("Sabotase has no silences remaining");
+        return prev;
+      }
+
+      // Update saboteur action counter and add target to silenced list
+      const updatedPlayers = prev.players.map(p =>
+        p.id === saboteurId
+          ? { ...p, actionUseCounter: (p.actionUseCounter || 0) + 1 }
+          : p
+      );
+
+      return {
+        ...prev,
+        players: updatedPlayers,
+        silencedPlayers: [...(prev.silencedPlayers || []), targetId],
+        phase: "wordReveal"
+      };
+    });
+  };
+
   return (
     <GameContext.Provider
       value={{
@@ -377,6 +472,8 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
         submitVote,
         submitMrWhiteGuess,
         submitDescription,
+        submitDetectiveScan,
+        submitSaboteurSilence,
         resetGame,
         updateRoleDistribution,
         checkGameEnd,

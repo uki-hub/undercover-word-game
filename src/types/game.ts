@@ -1,10 +1,12 @@
-export type PlayerRole = "civilian" | "undercover" | "mrwhite" | "fool" | "traitor" | "spectator";
+export type PlayerRole = "civilian" | "undercover" | "mrwhite" | "fool" | "traitor" | "detective" | "saboteur" | "spectator";
 
 export type RoleDistribution = {
   undercovers: number;
   mrWhites: number;
   fool: number;
   traitor: number;
+  detective: number;
+  saboteur: number;
 };
 
 // Role-based type system
@@ -16,6 +18,7 @@ export interface RoleBase {
   getsWord: boolean; // Does this role receive a word?
   winCondition: "eliminateEnemies" | "votedOut" | "outnumberCivilians" | "guessCivilianWord";
   scoreOnWin: number;
+  maxActionUsageCount?: number; // How many times can this role use their action (0 = no action)
 }
 
 export interface CivilianRole extends RoleBase {
@@ -65,7 +68,27 @@ export interface TraitorRole extends RoleBase {
   currentWordType: "majority" | "undercover"; // Tracks current word type
 }
 
-export type Role = CivilianRole | UndercoverRole | MrWhiteRole | FoolRole | TraitorRole;
+export interface DetectiveRole extends RoleBase {
+  type: "detective";
+  team: "civilian";
+  getsWord: true;
+  winCondition: "eliminateEnemies";
+  scoreOnWin: 5; // Bonus for gathering information
+  wordType: "majority"; // Gets the majority word
+  maxActionUsageCount: 99; // Can scan once per game
+}
+
+export interface SaboteurRole extends RoleBase {
+  type: "saboteur";
+  team: "undercover";
+  getsWord: true;
+  winCondition: "outnumberCivilians";
+  scoreOnWin: 8; // Bonus for disruption
+  wordType: "undercover"; // Gets the undercover word
+  maxActionUsageCount: 1; // Can silence once per game
+}
+
+export type Role = CivilianRole | UndercoverRole | MrWhiteRole | FoolRole | TraitorRole | DetectiveRole | SaboteurRole;
 
 // Role configuration factory
 export const RoleConfig = {
@@ -114,6 +137,26 @@ export const RoleConfig = {
     transformationThreshold: playerCount <= 6 ? 2 : 3,
     currentTeam: "civilian",
     currentWordType: "majority"
+  }),
+
+  detective: (): DetectiveRole => ({
+    type: "detective",
+    team: "civilian",
+    getsWord: true,
+    winCondition: "eliminateEnemies",
+    scoreOnWin: 5,
+    wordType: "majority",
+    maxActionUsageCount: 99
+  }),
+
+  saboteur: (): SaboteurRole => ({
+    type: "saboteur",
+    team: "undercover",
+    getsWord: true,
+    winCondition: "outnumberCivilians",
+    scoreOnWin: 8,
+    wordType: "undercover",
+    maxActionUsageCount: 1
   })
 };
 
@@ -130,9 +173,18 @@ export type Player = {
   eliminationReason?: "voted" | "auto"; // Track if eliminated by vote or auto-elimination
   traitorTransformationRound?: number; // Track when traitor transforms to undercover
   originalRole?: PlayerRole; // Track original role before transformation (for traitor scoring)
+  actionUseCounter?: number; // Track how many times this player has used their action
 };
 
-export type GamePhase = "setup" | "wordReveal" | "discussion" | "voting" | "results" | "gameEnd";
+export type GamePhase = "setup" | "action" | "wordReveal" | "discussion" | "voting" | "results" | "gameEnd";
+
+export type ScanResult = {
+  detectiveId: string;
+  player1Id: string;
+  player2Id: string;
+  result: "=" | "≠";
+  round: number;
+};
 
 export type GameState = {
   players: Player[];
@@ -148,4 +200,6 @@ export type GameState = {
   roleDistribution: RoleDistribution;
   currentPlayerIndex: number;
   deathCount?: number;
+  actionResults?: Record<string, ScanResult>; // Store results from action phase (detective scans)
+  silencedPlayers?: string[]; // Players who are silenced by saboteur
 };
