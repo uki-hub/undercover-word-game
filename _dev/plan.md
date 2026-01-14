@@ -26,7 +26,7 @@ After passing the round limit, the player becomes an undercover.
 
 ---
 
-## Detective (Testing)
+## Detective (TESTING)
 **Team:** Civilian  
 **Word:** Civilian Word  
 
